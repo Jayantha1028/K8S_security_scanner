@@ -1,0 +1,4537 @@
+{
+  "nginx:1.14": [
+    {
+      "cve_id": "CVE-2020-27350",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libapt-pkg5.0",
+      "fixed_in": "1.4.11",
+      "description": "APT had several integer overflows and underflows while parsing .deb pa ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-3810",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libapt-pkg5.0",
+      "fixed_in": "1.4.10",
+      "description": "Missing input validation in the ar/tar implementations of APT before v ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-2779",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "util-linux",
+      "fixed_in": "latest",
+      "description": "util-linux: runuser tty hijack via TIOCSTI ioctl",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-37600",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "util-linux",
+      "fixed_in": "latest",
+      "description": "util-linux: integer overflow can lead to buffer overflow in get_sem_elements() in sys-utils/ipcutils.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-2781",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "coreutils",
+      "fixed_in": "latest",
+      "description": "coreutils: Non-privileged session can escape to the parent session in chroot",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1664",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "dpkg",
+      "fixed_in": "1.18.26",
+      "description": "Dpkg::Source::Archive in dpkg, the Debian package management system, b ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1304",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libss2",
+      "fixed_in": "latest",
+      "description": "e2fsprogs: out-of-bounds read/write via crafted filesystem",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-5094",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libss2",
+      "fixed_in": "1.43.4-2+deb9u1",
+      "description": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-5188",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libss2",
+      "fixed_in": "1.43.4-2+deb9u2",
+      "description": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-12886",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libstdc++6",
+      "fixed_in": "latest",
+      "description": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1000858",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "gnupg2: Cross site request forgery in dirmngr resulting in an information disclosure or denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-9234",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "GnuPG: Unenforced configuration allows for apparently valid certifications actually signed by signing subkeys",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-14855",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1271",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "liblzma5",
+      "fixed_in": "5.2.2-1.2+deb9u1",
+      "description": "gzip: arbitrary-file-write vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-20367",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libbsd0",
+      "fixed_in": "0.8.3-1+deb9u1",
+      "description": "nlist.c in libbsd before 0.10.0 has an out-of-bounds read during a com ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-12900",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libbz2-1.0",
+      "fixed_in": "latest",
+      "description": "bzip2: bzip2: Data integrity error when decompressing (with data integrity tests fail).",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-8457",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libdb5.3",
+      "fixed_in": "latest",
+      "description": "sqlite: heap out-of-bound read in function rtreenode()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22822",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in addBinding in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22823",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Expat: Denial of Service vulnerability in XML parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22824",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Expat: Denial of service and memory issues due to integer overflow",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23852",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Integer overflow in function XML_GetBuffer",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25235",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Malformed 2- and 3-byte UTF-8 sequences can lead to arbitrary code execution",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25236",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Namespace-separator characters in \"xmlns[:prefix]\" attribute values can lead to arbitrary code execution",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25315",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Integer overflow in storeRawNames()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-20843",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u2",
+      "description": "expat: large number of colons in input makes parser consume high amount of resources, leading to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-15903",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u3",
+      "description": "expat: heap-based buffer over-read via crafted XML input",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-45960",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Large number of prefixed XML attributes on a single tag can crash libexpat",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-46143",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in doProlog in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22825",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in lookup in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22826",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in nextScaffoldPart in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22827",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in storeAtts in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23990",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: integer overflow in the doProlog function",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25313",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Stack exhaustion in doctype parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-15999",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libfreetype6",
+      "fixed_in": "2.6.3-3.2+deb9u2",
+      "description": "freetype: Heap-based buffer overflow due to integer truncation in Load_SBit_Png",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27404",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "FreeType: Buffer overflow in sfnt_init_face",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27405",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "FreeType: Segmentation violation via FNT_Size_Request",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27406",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "Freetype: Segmentation violation via FT_Request_Size",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-33560",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libgcrypt20",
+      "fixed_in": "latest",
+      "description": "libgcrypt: mishandles ElGamal encryption because it lacks exponent blinding to address a side-channel attack against mpi",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13627",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgcrypt20",
+      "fixed_in": "latest",
+      "description": "libgcrypt: ECDSA timing attack allowing private key leak",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-40528",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgcrypt20",
+      "fixed_in": "1.7.6-2+deb9u4",
+      "description": "libgcrypt: ElGamal implementation allows plaintext recovery",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-6363",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "In the GD Graphics Library (aka LibGD) through 2.2.5, there is a heap- ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-38115",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "read_header_tga in gd_tga.c in the GD Graphics Library (aka LibGD) thr ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-40812",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "The GD Graphics Library (aka LibGD) through 2.3.2 has an out-of-bounds ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14553",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "gd: NULL pointer dereference in gdImageClone",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-11038",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libgd3",
+      "fixed_in": "2.2.4-2+deb9u5",
+      "description": "gd: Information disclosure in gdImageCreateFromXbm()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10531",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libicu57",
+      "fixed_in": "57.1-6+deb9u4",
+      "description": "ICU: Integer overflow in UnicodeString::doAppend()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-21913",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libicu57",
+      "fixed_in": "57.1-6+deb9u5",
+      "description": "icu: Use after free in pkg_createWithAssemblyCode function in tools/pkgdata/pkgdata.cpp",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-2201",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u2",
+      "description": "libjpeg-turbo: several integer overflows and subsequent segfaults when attempting to compress/decompress gigapixel image",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-13790",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: heap-based buffer over-read in get_rgb_row() in rdppm.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14152",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg: improper handling of max_memory_to_use setting can lead to excessive memory consumption",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1152",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: Divide by zero allows for denial of service via crafted BMP image",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14498",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: heap-based buffer over-read via crafted 8-bit BMP in get_8bit_row in rdbmp.c leads to denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3520",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "liblz4-1",
+      "fixed_in": "0.0~r131-2+deb9u1",
+      "description": "lz4: memory corruption due to an integer overflow bug caused by memmove argument",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17543",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "liblz4-1",
+      "fixed_in": "latest",
+      "description": "lz4: heap-based buffer overflow in LZ4_write32",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-29458",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: segfaulting OOB read",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-19211",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17594",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17595",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14155",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpcre3",
+      "fixed_in": "latest",
+      "description": "pcre: Integer overflow when parsing callout numeric arguments",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-12652",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libpng16-16",
+      "fixed_in": "latest",
+      "description": "libpng: does not check length of chunks against user limit",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-7317",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng16-16",
+      "fixed_in": "1.6.28-1+deb9u1",
+      "description": "libpng: use-after-free in png_image_free in png.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36084",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in __cil_verify_classperms()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36085",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in __cil_verify_classperms()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36086",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in cil_reset_classpermission()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36087",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: heap-based buffer overflow in ebitmap_match_any()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1543",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0k-1~deb9u1",
+      "description": "openssl: ChaCha20-Poly1305 with long nonces",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-23840",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u3",
+      "description": "openssl: integer overflow in CipherUpdate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3712",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u4",
+      "description": "openssl: Read buffer overruns processing ASN.1 strings",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0778",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u5",
+      "description": "openssl: Infinite loop in BN_mod_sqrt() reachable when parsing certificates",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1292",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u6",
+      "description": "openssl: c_rehash script allows command injection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1547",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u1",
+      "description": "openssl: side-channel weak encryption vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1551",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u5",
+      "description": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-1971",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u2",
+      "description": "openssl: EDIPARTYNAME NULL pointer de-reference",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-23841",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u3",
+      "description": "openssl: NULL pointer dereference in X509_issuer_and_serial_hash()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-4160",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "latest",
+      "description": "openssl: Carry propagation bug in the MIPS32 and MIPS64 squaring procedure",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1563",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u1",
+      "description": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-15686",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u10",
+      "description": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3842",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u11",
+      "description": "systemd: Spoofing of XDG_SEAT allows for actions to be checked against \"allow_active\" instead of \"allow_any\"",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3843",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: services with DynamicUser can create SUID/SGID binaries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3844",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-1712",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u14",
+      "description": "systemd: use-after-free when asynchronous polkit queries are performed",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1049",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u10",
+      "description": "systemd: automount: access to automounted volumes can lock up",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-33910",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u13",
+      "description": "systemd: uncontrolled allocation on the stack in function unit_name_path_escape leads to crash",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3997",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: Uncontrolled recursion in systemd-tmpfiles when removing files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-16888",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-6954",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: Mishandled symlinks in systemd-tmpfiles allows local users to obtain ownership of arbitrary files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-12900",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: Heap-based buffer overflow in the cpSeparateBufToContigBuf function resulting in a denial of service or possibl",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-17100",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: Integer overflow in multiply_ms in tools/ppm2tiff.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17546",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow leading to heap-based buffer overflow in tif_getimage.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-19131",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: a buffer overflow via the \"invertImage()\" may lead to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-35523",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u6",
+      "description": "libtiff: Integer overflow in tif_getimage.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-35524",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u6",
+      "description": "libtiff: Heap-based buffer overflow in TIFF2PDF tool",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-17000",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: NULL pointer dereference in function _TIFFmemcmp at tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-19210",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: NULL pointer dereference in TIFFWriteDirectorySec function in tif_dirwrite.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-14973",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow in _TIFFCheckMalloc and _TIFFCheckRealloc in tif_aux.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-7663",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow in libtiff/tif_dirwrite.c resulting in an invalid pointer dereference",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-18768",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: heap-based buffer overflow in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-19144",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: heap-based buffer overflow in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0561",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: Denial of Service via crafted TIFF file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0562",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: Null source pointer lead to Denial of Service via crafted TIFF file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22844",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: out-of-bounds read in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25009",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in WebPMuxCreateInternal",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25010",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ApplyFilter()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25011",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: heap-based buffer overflow in PutLE16()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25012",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in WebPMuxCreateInternal()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25013",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ShiftBytes()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25014",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: use of uninitialized value in ReadSymbol()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36328",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: heap-based buffer overflow in WebPDecode*Into functions",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36329",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: use-after-free in EmitFancyRGB() in dec/io_dec.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36330",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ChunkVerifyAndAssign() in mux/muxread.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36331",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ChunkAssignData() in mux/muxinternal.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36332",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libwebp6",
+      "fixed_in": "latest",
+      "description": "libwebp: excessive memory allocation when reading a file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-31535",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u4",
+      "description": "libX11: missing request length checks",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14363",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u3",
+      "description": "libX11: integer overflow leads to double free in locale handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14344",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u2",
+      "description": "libX11: Heap overflow in the X input method client",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-8872",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Out-of-bounds read in htmlParseTryOrFinish",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-16932",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Infinite recursion in parameter entities",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-5130",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "chromium-browser: heap overflow in libxml2",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14404",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-19956",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: memory leak in xmlParseBalancedChunkMemoryRecover in parser.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-20388",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: memory leak in xmlSchemaPreRun in xmlschemas.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-7595",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: infinite loop in xmlStringLenDecodeEntities in some end-of-file situations",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3516",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Use-after-free in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3517",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Heap-based buffer overflow in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3518",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Use-after-free in xmlXIncludeDoProcess() in xinclude.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23308",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Use-after-free of ID and IDREF attributes",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-9318",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: XML External Entity vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-18258",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-5969",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Null pointer dereference in xmlSaveDoc implementation",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14567",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-24977",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Buffer overflow vulnerability in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3537",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: NULL pointer dereference when post-validating mixed content parsed in recovery mode",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3541",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u5",
+      "description": "libxml2: Exponential entity expansion attack bypasses all existing protection mechanisms",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-29824",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u7",
+      "description": "libxml2: integer overflows in xmlBuf and xmlBuffer lead to out-of-bounds write",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-11068",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: xsltCheckRead and xsltCheckWrite routines security bypass by crafted URL",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-18197",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u2",
+      "description": "libxslt: use after free in xsltCopyText in transform.c could lead to information disclosure",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13117",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: an xsl number with certain format strings could lead to a uninitialized read in xsltNumberFormatInsertNumbers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13118",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: read of uninitialized stack data due to too narrow xsl:number instruction and an invalid character",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-12424",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "passwd",
+      "fixed_in": "1:4.4-4.1+deb9u1",
+      "description": "shadow-utils: Buffer overflow via newusers tool",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-20002",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "passwd",
+      "fixed_in": "1:4.4-4.1+deb9u1",
+      "description": "The Debian shadow package before 1:4.5-1 for Shadow incorrectly lists  ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-7169",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "passwd",
+      "fixed_in": "latest",
+      "description": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3618",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "latest",
+      "description": "ALPACA: Application Layer Protocol Confusion - Analyzing and Mitigating Cracks in TLS Authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36309",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "nginx",
+      "fixed_in": "latest",
+      "description": "ngx_http_lua_module (aka lua-nginx-module) before 0.10.16 in OpenResty ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10543",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10878",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-12723",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls le",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-16156",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "latest",
+      "description": "perl-CPAN: Bypass of verification of signatures in CHECKSUMS files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-20482",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "tar",
+      "fixed_in": "1.29b-1.1+deb9u1",
+      "description": "tar: Infinite read loop in sparse_dump_region function in sparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25032",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "zlib1g",
+      "fixed_in": "1:1.2.8.dfsg-5+deb9u1",
+      "description": "zlib: A flaw found in zlib when compressing (not decompressing) certain inputs",
+      "mitre_technique": "T1190"
+    }
+  ],
+  "debian:9": [
+    {
+      "cve_id": "CVE-2020-27350",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libapt-pkg5.0",
+      "fixed_in": "1.4.11",
+      "description": "APT had several integer overflows and underflows while parsing .deb pa ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-3810",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libapt-pkg5.0",
+      "fixed_in": "1.4.10",
+      "description": "Missing input validation in the ar/tar implementations of APT before v ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-2779",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "util-linux",
+      "fixed_in": "latest",
+      "description": "util-linux: runuser tty hijack via TIOCSTI ioctl",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-37600",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "util-linux",
+      "fixed_in": "latest",
+      "description": "util-linux: integer overflow can lead to buffer overflow in get_sem_elements() in sys-utils/ipcutils.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-2781",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "coreutils",
+      "fixed_in": "latest",
+      "description": "coreutils: Non-privileged session can escape to the parent session in chroot",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1664",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "dpkg",
+      "fixed_in": "1.18.26",
+      "description": "Dpkg::Source::Archive in dpkg, the Debian package management system, b ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1304",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libss2",
+      "fixed_in": "latest",
+      "description": "e2fsprogs: out-of-bounds read/write via crafted filesystem",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-5094",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libss2",
+      "fixed_in": "1.43.4-2+deb9u1",
+      "description": "e2fsprogs: Crafted ext4 partition leads to out-of-bounds write",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-5188",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libss2",
+      "fixed_in": "1.43.4-2+deb9u2",
+      "description": "e2fsprogs: Out-of-bounds write in e2fsck/rehash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-12886",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libstdc++6",
+      "fixed_in": "latest",
+      "description": "gcc: spilling of stack protection address in cfgexpand.c and function.c leads to stack-overflow protection bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1000858",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "gnupg2: Cross site request forgery in dirmngr resulting in an information disclosure or denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-9234",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "GnuPG: Unenforced configuration allows for apparently valid certifications actually signed by signing subkeys",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-14855",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "gpgv",
+      "fixed_in": "latest",
+      "description": "gnupg2: OpenPGP Key Certification Forgeries with SHA-1",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1271",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "liblzma5",
+      "fixed_in": "5.2.2-1.2+deb9u1",
+      "description": "gzip: arbitrary-file-write vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-20367",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libbsd0",
+      "fixed_in": "0.8.3-1+deb9u1",
+      "description": "nlist.c in libbsd before 0.10.0 has an out-of-bounds read during a com ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-12900",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libbz2-1.0",
+      "fixed_in": "latest",
+      "description": "bzip2: bzip2: Data integrity error when decompressing (with data integrity tests fail).",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-8457",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libdb5.3",
+      "fixed_in": "latest",
+      "description": "sqlite: heap out-of-bound read in function rtreenode()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22822",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in addBinding in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22823",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Expat: Denial of Service vulnerability in XML parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22824",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Expat: Denial of service and memory issues due to integer overflow",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23852",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Integer overflow in function XML_GetBuffer",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25235",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Malformed 2- and 3-byte UTF-8 sequences can lead to arbitrary code execution",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25236",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Namespace-separator characters in \"xmlns[:prefix]\" attribute values can lead to arbitrary code execution",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25315",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Integer overflow in storeRawNames()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-20843",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u2",
+      "description": "expat: large number of colons in input makes parser consume high amount of resources, leading to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-15903",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u3",
+      "description": "expat: heap-based buffer over-read via crafted XML input",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-45960",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Large number of prefixed XML attributes on a single tag can crash libexpat",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-46143",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in doProlog in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22825",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in lookup in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22826",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in nextScaffoldPart in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22827",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: Integer overflow in storeAtts in xmlparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23990",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u4",
+      "description": "expat: integer overflow in the doProlog function",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-25313",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat1",
+      "fixed_in": "2.2.0-2+deb9u5",
+      "description": "expat: Stack exhaustion in doctype parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-15999",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libfreetype6",
+      "fixed_in": "2.6.3-3.2+deb9u2",
+      "description": "freetype: Heap-based buffer overflow due to integer truncation in Load_SBit_Png",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27404",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "FreeType: Buffer overflow in sfnt_init_face",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27405",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "FreeType: Segmentation violation via FNT_Size_Request",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-27406",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libfreetype6",
+      "fixed_in": "latest",
+      "description": "Freetype: Segmentation violation via FT_Request_Size",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-33560",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libgcrypt20",
+      "fixed_in": "latest",
+      "description": "libgcrypt: mishandles ElGamal encryption because it lacks exponent blinding to address a side-channel attack against mpi",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13627",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgcrypt20",
+      "fixed_in": "latest",
+      "description": "libgcrypt: ECDSA timing attack allowing private key leak",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-40528",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgcrypt20",
+      "fixed_in": "1.7.6-2+deb9u4",
+      "description": "libgcrypt: ElGamal implementation allows plaintext recovery",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-6363",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "In the GD Graphics Library (aka LibGD) through 2.2.5, there is a heap- ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-38115",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "read_header_tga in gd_tga.c in the GD Graphics Library (aka LibGD) thr ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-40812",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "The GD Graphics Library (aka LibGD) through 2.3.2 has an out-of-bounds ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14553",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libgd3",
+      "fixed_in": "latest",
+      "description": "gd: NULL pointer dereference in gdImageClone",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-11038",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libgd3",
+      "fixed_in": "2.2.4-2+deb9u5",
+      "description": "gd: Information disclosure in gdImageCreateFromXbm()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10531",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libicu57",
+      "fixed_in": "57.1-6+deb9u4",
+      "description": "ICU: Integer overflow in UnicodeString::doAppend()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-21913",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libicu57",
+      "fixed_in": "57.1-6+deb9u5",
+      "description": "icu: Use after free in pkg_createWithAssemblyCode function in tools/pkgdata/pkgdata.cpp",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-2201",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u2",
+      "description": "libjpeg-turbo: several integer overflows and subsequent segfaults when attempting to compress/decompress gigapixel image",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-13790",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: heap-based buffer over-read in get_rgb_row() in rdppm.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14152",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg: improper handling of max_memory_to_use setting can lead to excessive memory consumption",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1152",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: Divide by zero allows for denial of service via crafted BMP image",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14498",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libjpeg62-turbo",
+      "fixed_in": "1:1.5.1-2+deb9u1",
+      "description": "libjpeg-turbo: heap-based buffer over-read via crafted 8-bit BMP in get_8bit_row in rdbmp.c leads to denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3520",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "liblz4-1",
+      "fixed_in": "0.0~r131-2+deb9u1",
+      "description": "lz4: memory corruption due to an integer overflow bug caused by memmove argument",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17543",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "liblz4-1",
+      "fixed_in": "latest",
+      "description": "lz4: heap-based buffer overflow in LZ4_write32",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-29458",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: segfaulting OOB read",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-19211",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: Null pointer dereference at function _nc_parse_entry in parse_entry.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17594",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: heap-based buffer overflow in the _nc_find_entry function in tinfo/comp_hash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17595",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "ncurses-bin",
+      "fixed_in": "latest",
+      "description": "ncurses: heap-based buffer overflow in the fmt_entry function in tinfo/comp_hash.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14155",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpcre3",
+      "fixed_in": "latest",
+      "description": "pcre: Integer overflow when parsing callout numeric arguments",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-12652",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libpng16-16",
+      "fixed_in": "latest",
+      "description": "libpng: does not check length of chunks against user limit",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-7317",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng16-16",
+      "fixed_in": "1.6.28-1+deb9u1",
+      "description": "libpng: use-after-free in png_image_free in png.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36084",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in __cil_verify_classperms()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36085",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in __cil_verify_classperms()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36086",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: use-after-free in cil_reset_classpermission()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-36087",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libsepol1",
+      "fixed_in": "latest",
+      "description": "libsepol: heap-based buffer overflow in ebitmap_match_any()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1543",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0k-1~deb9u1",
+      "description": "openssl: ChaCha20-Poly1305 with long nonces",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-23840",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u3",
+      "description": "openssl: integer overflow in CipherUpdate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3712",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u4",
+      "description": "openssl: Read buffer overruns processing ASN.1 strings",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0778",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u5",
+      "description": "openssl: Infinite loop in BN_mod_sqrt() reachable when parsing certificates",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-1292",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u6",
+      "description": "openssl: c_rehash script allows command injection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1547",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u1",
+      "description": "openssl: side-channel weak encryption vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1551",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u5",
+      "description": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-1971",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u2",
+      "description": "openssl: EDIPARTYNAME NULL pointer de-reference",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-23841",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u3",
+      "description": "openssl: NULL pointer dereference in X509_issuer_and_serial_hash()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-4160",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl1.1",
+      "fixed_in": "latest",
+      "description": "openssl: Carry propagation bug in the MIPS32 and MIPS64 squaring procedure",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-1563",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl1.1",
+      "fixed_in": "1.1.0l-1~deb9u1",
+      "description": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-15686",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u10",
+      "description": "systemd: line splitting via fgets() allows for state injection during daemon-reexec",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3842",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u11",
+      "description": "systemd: Spoofing of XDG_SEAT allows for actions to be checked against \"allow_active\" instead of \"allow_any\"",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3843",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: services with DynamicUser can create SUID/SGID binaries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-3844",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: services with DynamicUser can get new privileges and create SGID binaries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-1712",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u14",
+      "description": "systemd: use-after-free when asynchronous polkit queries are performed",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-1049",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u10",
+      "description": "systemd: automount: access to automounted volumes can lock up",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-33910",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "232-25+deb9u13",
+      "description": "systemd: uncontrolled allocation on the stack in function unit_name_path_escape leads to crash",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3997",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: Uncontrolled recursion in systemd-tmpfiles when removing files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-16888",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: kills privileged process if unprivileged PIDFile was tampered",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-6954",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libudev1",
+      "fixed_in": "latest",
+      "description": "systemd: Mishandled symlinks in systemd-tmpfiles allows local users to obtain ownership of arbitrary files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-12900",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: Heap-based buffer overflow in the cpSeparateBufToContigBuf function resulting in a denial of service or possibl",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-17100",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: Integer overflow in multiply_ms in tools/ppm2tiff.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-17546",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow leading to heap-based buffer overflow in tif_getimage.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-19131",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: a buffer overflow via the \"invertImage()\" may lead to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-35523",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u6",
+      "description": "libtiff: Integer overflow in tif_getimage.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-35524",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u6",
+      "description": "libtiff: Heap-based buffer overflow in TIFF2PDF tool",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-17000",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: NULL pointer dereference in function _TIFFmemcmp at tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-19210",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: NULL pointer dereference in TIFFWriteDirectorySec function in tif_dirwrite.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-14973",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow in _TIFFCheckMalloc and _TIFFCheckRealloc in tif_aux.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-7663",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u5",
+      "description": "libtiff: integer overflow in libtiff/tif_dirwrite.c resulting in an invalid pointer dereference",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-18768",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: heap-based buffer overflow in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-19144",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u7",
+      "description": "libtiff: heap-based buffer overflow in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0561",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: Denial of Service via crafted TIFF file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-0562",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: Null source pointer lead to Denial of Service via crafted TIFF file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-22844",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libtiff5",
+      "fixed_in": "4.0.8-2+deb9u8",
+      "description": "libtiff: out-of-bounds read in _TIFFmemcpy() in tif_unix.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25009",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in WebPMuxCreateInternal",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25010",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ApplyFilter()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25011",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: heap-based buffer overflow in PutLE16()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25012",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in WebPMuxCreateInternal()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25013",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ShiftBytes()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25014",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: use of uninitialized value in ReadSymbol()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36328",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: heap-based buffer overflow in WebPDecode*Into functions",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36329",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: use-after-free in EmitFancyRGB() in dec/io_dec.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36330",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ChunkVerifyAndAssign() in mux/muxread.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36331",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libwebp6",
+      "fixed_in": "0.5.2-1+deb9u1",
+      "description": "libwebp: out-of-bounds read in ChunkAssignData() in mux/muxinternal.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36332",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libwebp6",
+      "fixed_in": "latest",
+      "description": "libwebp: excessive memory allocation when reading a file",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-31535",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u4",
+      "description": "libX11: missing request length checks",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14363",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u3",
+      "description": "libX11: integer overflow leads to double free in locale handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-14344",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libx11-data",
+      "fixed_in": "2:1.6.4-3+deb9u2",
+      "description": "libX11: Heap overflow in the X input method client",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-8872",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Out-of-bounds read in htmlParseTryOrFinish",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-16932",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Infinite recursion in parameter entities",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-5130",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "chromium-browser: heap overflow in libxml2",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14404",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: NULL pointer dereference in xmlXPathCompOpEval() function in xpath.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-19956",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: memory leak in xmlParseBalancedChunkMemoryRecover in parser.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-20388",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: memory leak in xmlSchemaPreRun in xmlschemas.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-7595",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: infinite loop in xmlStringLenDecodeEntities in some end-of-file situations",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3516",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Use-after-free in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3517",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Heap-based buffer overflow in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3518",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: Use-after-free in xmlXIncludeDoProcess() in xinclude.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-23308",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Use-after-free of ID and IDREF attributes",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2016-9318",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: XML External Entity vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-18258",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Unrestricted memory usage in xz_head() function in xzlib.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-5969",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u6",
+      "description": "libxml2: Null pointer dereference in xmlSaveDoc implementation",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-14567",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Infinite loop caused by incorrect error detection during LZMA decompression",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-24977",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u3",
+      "description": "libxml2: Buffer overflow vulnerability in xmlEncodeEntitiesInternal() in entities.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3537",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u4",
+      "description": "libxml2: NULL pointer dereference when post-validating mixed content parsed in recovery mode",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3541",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u5",
+      "description": "libxml2: Exponential entity expansion attack bypasses all existing protection mechanisms",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2022-29824",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxml2",
+      "fixed_in": "2.9.4+dfsg1-2.2+deb9u7",
+      "description": "libxml2: integer overflows in xmlBuf and xmlBuffer lead to out-of-bounds write",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-11068",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: xsltCheckRead and xsltCheckWrite routines security bypass by crafted URL",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-18197",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u2",
+      "description": "libxslt: use after free in xsltCopyText in transform.c could lead to information disclosure",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13117",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: an xsl number with certain format strings could lead to a uninitialized read in xsltNumberFormatInsertNumbers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2019-13118",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libxslt1.1",
+      "fixed_in": "1.1.29-2.1+deb9u1",
+      "description": "libxslt: read of uninitialized stack data due to too narrow xsl:number instruction and an invalid character",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-12424",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "passwd",
+      "fixed_in": "1:4.4-4.1+deb9u1",
+      "description": "shadow-utils: Buffer overflow via newusers tool",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2017-20002",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "passwd",
+      "fixed_in": "1:4.4-4.1+deb9u1",
+      "description": "The Debian shadow package before 1:4.5-1 for Shadow incorrectly lists  ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-7169",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "passwd",
+      "fixed_in": "latest",
+      "description": "shadow-utils: newgidmap allows unprivileged user to drop supplementary groups potentially allowing privilege escalation",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2021-3618",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "latest",
+      "description": "ALPACA: Application Layer Protocol Confusion - Analyzing and Mitigating Cracks in TLS Authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-36309",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "nginx",
+      "fixed_in": "latest",
+      "description": "ngx_http_lua_module (aka lua-nginx-module) before 0.10.16 in OpenResty ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10543",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: heap-based buffer overflow in regular expression compiler leads to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-10878",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: corruption of intermediate language state of compiled regular expression due to integer overflow leads to DoS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-12723",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "5.24.1-3+deb9u7",
+      "description": "perl: corruption of intermediate language state of compiled regular expression due to recursive S_study_chunk() calls le",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2020-16156",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "perl-base",
+      "fixed_in": "latest",
+      "description": "perl-CPAN: Bypass of verification of signatures in CHECKSUMS files",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-20482",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "tar",
+      "fixed_in": "1.29b-1.1+deb9u1",
+      "description": "tar: Infinite read loop in sparse_dump_region function in sparse.c",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2018-25032",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "zlib1g",
+      "fixed_in": "1:1.2.8.dfsg-5+deb9u1",
+      "description": "zlib: A flaw found in zlib when compressing (not decompressing) certain inputs",
+      "mitre_technique": "T1190"
+    }
+  ],
+  "caddy:2.11": [
+    {
+      "cve_id": "CVE-2026-111497",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "brotli-libs",
+      "fixed_in": "1.2.1-r0",
+      "description": "brotli: Out-of-Bounds Write in Google Brotli Decoder",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92392",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: HTTP/2 upload Use-After-Free",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92388",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: FTP wildcard write callback mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-107928",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: info leak uploading over WebSockets with GnuTLS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-107929",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: local interface connection reuse mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86409",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: stale SigV4 headers sent unintended",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86410",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: redirect to SFTP or SCP bypasses host verification",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86411",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: FTP connection reuse inherits client-certificate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86412",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: server-set cookie erases cookie jar",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86413",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Negotiate credentials sent to redirected origin",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86414",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: leaking host credentials to HTTP proxy",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86415",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: auto client cert connection reuse mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87861",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: cross-origin reuse of a Negotiate connection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87862",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: HSTS cache import drops longer-lived child",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87863",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Hsts Response Erases Persisted Entries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87864",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: IMAP APPEND plus CRLF conversion command injection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87865",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: knownhost callback mismatches key as missing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87866",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: wolfSSL public-key pinning bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92386",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: server-set cookie aborts cookie jar load",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92387",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: never-ending loop via server response omission",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92389",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: TFTP direction confusion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92390",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: -J no-clobber guarantee bypassed with 103 early hints",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92391",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: curl_mime_free stack overflow by recursion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94265",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Authorization: Negotiate sent to foreign origin",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94266",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: password leak in CURLINFO_EFFECTIVE_URL",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-114437",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "github.com/go-chi/chi/v5",
+      "fixed_in": "5.4.0",
+      "description": "github.com/go-chi/chi: chi: client IP spoofing via unverified direct connection in ClientIPFromXFF middleware",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-116587",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "github.com/go-jose/go-jose/v4",
+      "fixed_in": "4.1.6",
+      "description": "Go JOSE: DoS when parsing JWKs that contain RSA keys",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78669",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: net/http/internal/http2: golang.org/x/net/http2: net/http: Denial of Service via excessive HTTP/2 SETTINGS fra",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78659",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: golang.org/x/net/http2: golang: net/http: Denial of Service via HTTP/2 trailer header memory exhaustion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78660",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: golang: golang.org/x/net/http2: net/http: HTTP response smuggling via malformed HTTP/2 framing headers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78663",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: net/http/internal/http2: golang: golang.org/x/net/http2: golang: flow control limit bypass via double refund i",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-97032",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: net/http/internal/http2: golang: golang.org/x/net/http2: net/http: Denial of Service via concurrent HPACK enco",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78661",
+      "severity": "UNKNOWN",
+      "cvss": 3.0,
+      "package": "golang.org/x/net",
+      "fixed_in": "0.62.0",
+      "description": "Avoid quadratic complexity when coalescing text nodes in html in golang.org/x/net",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-97045",
+      "severity": "UNKNOWN",
+      "cvss": 3.0,
+      "package": "golang.org/x/net",
+      "fixed_in": "0.62.0",
+      "description": "Check all ancestor namespace transitions when rendering raw text in html in golang.org/x/net",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-111943",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "stdlib",
+      "fixed_in": "1.26.10, 1.27.3",
+      "description": "crypto/x509: golang: crypto/x509: Man-in-the-middle attacks via untrusted intermediate certificates",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78667",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: golang: golang: Denial of Service via crafted HTTP Range headers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-97031",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "crypto/tls: golang: crypto/tls: Denial of Service via multiple ECH outer extension references",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56866",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: golang: golang: Cross-user response poisoning via desynchronized HTTP CONNECT connections",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94439",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/http: golang: net/http: HTTP request smuggling via improper handling of HTTP/1 CONNECT responses",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94440",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "net/textproto: mime/multipart: golang: golang: Denial of Service via memory limit bypass in multipart form parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94448",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "html/template: golang: golang: cross-site scripting via consecutive expressions in JavaScript template literals",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-97030",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "html/template: golang: html/template: Cross-site scripting via improper escaping of yield keyword",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56857",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "stdlib",
+      "fixed_in": "1.26.9, 1.27.2",
+      "description": "os: golang: golang: Directory traversal via Windows junction handling",
+      "mitre_technique": "T1190"
+    }
+  ],
+  "nginx:1.28": [
+    {
+      "cve_id": "CVE-2026-111497",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "brotli-libs",
+      "fixed_in": "1.2.1-r0",
+      "description": "brotli: Out-of-Bounds Write in Google Brotli Decoder",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-33630",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "c-ares",
+      "fixed_in": "1.34.8-r0",
+      "description": "c-ares: c-ares: Use-after-free / double-free in query-completion handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-11352",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: curl/libcurl: Remote denial of service via QUIC UDP receive function vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-11586",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Denial of Service via WebSocket PING flood",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-12064",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: SSH host verification bypass when using schemeless URLs with SFTP/SCP",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-5773",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: libcurl: Wrong file transfer due to incorrect SMB connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-6276",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: libcurl: Information disclosure due to cookie leak when reusing connections with custom Host headers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8286",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Insecure connection establishment due to TLS configuration mismatch",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8458",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Unauthorized connection reuse due to a logical error",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8925",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Double-free vulnerability in SASL authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8927",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: Information disclosure due to uncleared proxy authentication state",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92392",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: HTTP/2 upload Use-After-Free",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9547",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Man-in-the-middle attack via SSH host key bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2025-14017",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.18.0-r0",
+      "description": "curl: curl: Security bypass due to global TLS option changes in multi-threaded LDAPS transfers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-10536",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Use-after-free vulnerability leading to Denial of Service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-11564",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Certificate validation bypass due to incorrect connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-11856",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Information disclosure via incorrect Digest authentication header reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-1965",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.19.0-r0",
+      "description": "curl: curl: Authentication bypass due to incorrect connection reuse with Negotiate authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-19931",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Information disclosure via incorrect connection reuse with Negotiate authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-3783",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.19.0-r0",
+      "description": "curl: curl: Information disclosure via OAuth2 bearer token leakage during HTTP(S) redirect",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-3784",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.19.0-r0",
+      "description": "curl: curl: Unauthorized access due to improper HTTP proxy connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-3805",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.19.0-r0",
+      "description": "curl: curl: Arbitrary code execution or Denial of Service via use-after-free in SMB request handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-4873",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: curl: Information disclosure due to incorrect TLS connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-5545",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: libcurl: Authentication bypass due to incorrect HTTP Negotiate connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-6253",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: curl: Proxy credential disclosure via redirects to unauthenticated proxies",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-6429",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: libcurl: Credential leak via reused proxy connection during HTTP redirects",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-7009",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: Curl: Certificate validation bypass due to OCSP stapling flaw",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-7168",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.20.0-r0",
+      "description": "curl: libcurl: Information disclosure via incorrect Proxy-Authorization header reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-82208",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Improper certificate validation when using wolfSSL CA cache",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8924",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Cookie injection via malicious HTTP server using super cookies",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8926",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Information disclosure via incorrect .netrc password lookup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-8932",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Security feature bypass due to improper mTLS connection reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9079",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Information disclosure due to failure to clear proxy authentication credentials",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9080",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Use-after-free via curl_easy_pause() in CURLMOPT_SOCKETFUNCTION callback",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92388",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: FTP wildcard write callback mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9545",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Information disclosure via cached SSL session and early data",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9546",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "libcurl: libcurl: Information disclosure due to persistent Referer header",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2025-14524",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.18.0-r0",
+      "description": "curl: Information disclosure via cross-protocol redirect with OAuth2 bearer token",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2025-14819",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.18.0-r0",
+      "description": "curl: libcurl: Improper certificate validation due to cached TLS settings reuse",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-107928",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: info leak uploading over WebSockets with GnuTLS",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-107929",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: local interface connection reuse mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-13608",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Authentication bypass in OpenLDAP SASL negotiation via Man-in-the-Middle (MITM) attack",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-18924",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Use-after-free in HTTP/2 Server Push with shared connections",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-80229",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Memory corruption vulnerability via OpenSSL 3 provider use-after-free",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-80230",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Public key pinning bypass allows unauthenticated connections",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-80231",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Incorrect HTTPS connection reuse with Native CA Store",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-80255",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: curl: Information disclosure due to secure cookie attribute bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-82209",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "curl: libcurl: Information disclosure via improper Public Suffix List boundary check",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86409",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: stale SigV4 headers sent unintended",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86410",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: redirect to SFTP or SCP bypasses host verification",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86411",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: FTP connection reuse inherits client-certificate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86412",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: server-set cookie erases cookie jar",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86413",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Negotiate credentials sent to redirected origin",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86414",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: leaking host credentials to HTTP proxy",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86415",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: auto client cert connection reuse mixup",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87861",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: cross-origin reuse of a Negotiate connection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87862",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: HSTS cache import drops longer-lived child",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87863",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Hsts Response Erases Persisted Entries",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87864",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: IMAP APPEND plus CRLF conversion command injection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87865",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: knownhost callback mismatches key as missing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-87866",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: wolfSSL public-key pinning bypass",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92386",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: server-set cookie aborts cookie jar load",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92387",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: never-ending loop via server response omission",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92389",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: TFTP direction confusion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92390",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: -J no-clobber guarantee bypassed with 103 early hints",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-92391",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: curl_mime_free stack overflow by recursion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94265",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: Authorization: Negotiate sent to foreign origin",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-94266",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.23.0-r0",
+      "description": "curl: curl: password leak in CURLINFO_EFFECTIVE_URL",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-80256",
+      "severity": "UNKNOWN",
+      "cvss": 3.0,
+      "package": "libcurl",
+      "fixed_in": "8.22.0-r0",
+      "description": "Title Not Available",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-31789",
+      "severity": "CRITICAL",
+      "cvss": 9.8,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL: Heap buffer overflow on 32-bit systems from large X.509 certificate processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-14456",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: OpenSSL: Denial of Service via unbounded memory growth in QUIC server",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-28387",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL: Arbitrary code execution due to use-after-free in DANE TLSA authentication",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-28388",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL: Denial of Service due to NULL pointer dereference in delta CRL processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-28389",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL: Denial of Service vulnerability in CMS processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-28390",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL: Denial of Service due to NULL pointer dereference in CMS EnvelopedData processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-45447",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Heap Use-After-Free in OpenSSL PKCS7_verify()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-18798",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: QUIC server may trigger double free when processing INITIAL packet",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-2673",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: OpenSSL TLS 1.3 server may choose unexpected key agreement group",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-31790",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.6-r0",
+      "description": "openssl: openssl: Information Disclosure from Uninitialized Memory via Invalid RSA Public Key",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34182",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: CMS AuthEnvelopedData Processing May Accept Forged Messages",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34183",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Unbounded Memory Growth in the QUIC PATH_CHALLENGE Handler",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42764",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: NULL pointer dereference in QUIC server initial packet handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-45445",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: AES-OCB IV Ignored on EVP_Cipher() Path",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-63072",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: heap buffer overflow in CMS key unwrapping",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-63076",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: invalid pointer dereference in CMP server via crafted protectionAlg",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-14457",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: RPK server signature algorithm selection can dereference a missing certificate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34180",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: OpenSSL: Heap buffer over-read in ASN.1 decoding can lead to denial of service or information disclosure.",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34181",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: PKCS#12 Files with PBMAC1 Are Accepted with Short HMAC Keys",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42766",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Possible NULL Dereference in Password-Based CMS Decryption",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42767",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: NULL Pointer Dereference in CRMF EncryptedValue Decryption",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42768",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Multi-RecipientInfo Bleichenbacher Oracle in CMS_decrypt() and PKCS7_decrypt()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42769",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Trust-Anchor Substitution via cert/issuer Typo in CMP rootCaKeyUpdate",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42770",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: FFC-DH Peer Validation Uses Attacker-Supplied q",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-45446",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: Incorrect Tag Processing for Empty Messages in AES-GCM-SIV and AES-SIV modes",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-54874",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: excessive memory use buffering DTLS records for a future epoch",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-63073",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: untrusted sender DN used as format string in CMP response validation",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-63074",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: CMP indefinite cache growth of ExtraCerts",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-63075",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: QUIC ACK-only packet retention can cause memory exhaustion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-7383",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: OpenSSL: Heap buffer overflow due to signed integer overflow in Unicode output sizing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-75803",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.8-r0",
+      "description": "openssl: openssl: AEAD forgeries possible with empty ciphertext in EVP_Cipher()",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9076",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libssl3",
+      "fixed_in": "3.5.7-r0",
+      "description": "openssl: OpenSSL: Denial of Service due to heap out-of-bounds read in CMS password-based decryption",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-45186",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.1-r0",
+      "description": "libexpat: denial of service via crafted XML input",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-66046",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.4-r0",
+      "description": "expat: Expat: Denial of Service via quadratic complexity in attribute processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-76641",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.4-r0",
+      "description": "expat: Expat: Denial of Service via XML external entity parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-76956",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.4-r0",
+      "description": "libexpat: libexpat: Denial of Service via hash flooding attack with crafted XML",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-76957",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.4-r0",
+      "description": "libexpat: libexpat: Memory corruption vulnerability allows arbitrary code execution or denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-77214",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.9.0-r0",
+      "description": "expat: expat: Information disclosure via heap buffer over-read in XML_ParseBuffer",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-93990",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.5-r0",
+      "description": "expat: Expat: XML Injection via Malformed UTF-16 Input",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-102633",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.9.0-r0",
+      "description": "expat: expat: Denial of Service via integer overflow in expat_realloc",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-50219",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "expat: libexpat: Use-after-free vulnerability due to improper handler call depth tracking",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56131",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Use-after-free vulnerability due to insufficient handler call depth tracking",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56132",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "expat: libexpat: Arbitrary Code Execution via Heap-based Buffer Overflow",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56403",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Arbitrary code execution due to integer overflow in storeAtts",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56404",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Arbitrary Code Execution via integer overflow in addBinding",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56405",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Information disclosure and arbitrary code execution via integer overflow",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56406",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Arbitrary code execution via integer overflow in XML_ParseBuffer",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56407",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Arbitrary code execution due to integer overflow",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56408",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat before 2.8.2 has an integer overflow in copyString.",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56409",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "xmlwf in libexpat before 2.8.2 has an integer overflow for the output  ...",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56410",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Integer overflow in xmlwf can lead to information disclosure and arbitrary code execution.",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56411",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "expat: libexpat: Integer Overflow Vulnerability Leading to Information Disclosure or Code Execution",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56412",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libexpat",
+      "fixed_in": "2.8.2-r0",
+      "description": "libexpat: libexpat: Use-after-free vulnerability due to improper handling of XML CDATA sections",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-41080",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "libexpat",
+      "fixed_in": "2.8.1-r0",
+      "description": "libexpat: expat: libexpat: Denial of Service via hash flooding with crafted XML",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-33416",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng",
+      "fixed_in": "1.6.56-r0",
+      "description": "libpng: libpng: Arbitrary code execution due to use-after-free vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-33636",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng",
+      "fixed_in": "1.6.56-r0",
+      "description": "libpng: libpng: Information disclosure and denial of service via out-of-bounds read/write in Neon palette expansion",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34757",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng",
+      "fixed_in": "1.6.57-r0",
+      "description": "libpng: libpng: Information disclosure and data corruption via use-after-free vulnerability",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-40930",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng",
+      "fixed_in": "1.6.58-r1",
+      "description": "libpng: libpng: Data integrity and availability impact due to improper APNG chunk handling",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-46675",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libpng",
+      "fixed_in": "1.6.59-r0",
+      "description": "libpng: libpng: Use-after-free in sequential reader when png_read_end called without reading image rows",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-53612",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r0",
+      "description": "util-linux: util-linux: TOCTOU in the mount program when applying post-mount ownership/mode changes",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-53613",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r0",
+      "description": "util-linux: util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-53614",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r0",
+      "description": "util-linux: util-linux: SUID mount(8) allows nosuid/noexec bypass via LIBMOUNT_FORCE_MOUNT2",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-76642",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r0",
+      "description": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78408",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r1",
+      "description": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-78410",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libuuid",
+      "fixed_in": "2.41.6-r0",
+      "description": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2025-14104",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libuuid",
+      "fixed_in": "2.41.4-r0",
+      "description": "util-linux: util-linux: Heap buffer overread in setpwnam() when processing 256-byte usernames",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-27456",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libuuid",
+      "fixed_in": "2.41.4-r0",
+      "description": "util-linux: TOCTOU in the mount program when setting up loop devices",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-6732",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "libxml2",
+      "fixed_in": "2.13.9-r1",
+      "description": "libxml2: libxml2: Denial of Service via crafted XSD-validated document",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-4367",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "libxpm",
+      "fixed_in": "3.5.19-r0",
+      "description": "libXpm: libXpm: Denial of Service via out-of-bounds read in XPM file parsing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-40200",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "musl-utils",
+      "fixed_in": "1.2.5-r23",
+      "description": "musl: musl libc: Arbitrary code execution and denial of service via stack-based memory corruption in qsort",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-6042",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "musl-utils",
+      "fixed_in": "1.2.5-r22",
+      "description": "musl libc: GB18030 4-byte Decoder: musl libc: Denial of Service via inefficient algorithmic complexity in iconv",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-107891",
+      "severity": "UNKNOWN",
+      "cvss": 3.0,
+      "package": "musl-utils",
+      "fixed_in": "1.2.5-r24",
+      "description": "Title Not Available",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-27135",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nghttp2-libs",
+      "fixed_in": "1.68.1",
+      "description": "nghttp2: nghttp2: Denial of Service via malformed HTTP/2 frames after session termination",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42055",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r4",
+      "description": "nginx: NGINX: Arbitrary code execution or Denial of Service via heap-based buffer overflow with crafted HTTP/2 headers",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-42533",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r6",
+      "description": "nginx: NGINX: Arbitrary code execution via crafted HTTP requests",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-49975",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r3",
+      "description": "httpd: httpd: HTTP/2 Remote Denial of Service via compression bomb and Slowloris-style attack",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-60005",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r6",
+      "description": "nginx: NGINX: Memory disclosure and denial of service in ngx_http_slice_module",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-9256",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r2",
+      "description": "nginx: ngx_http_rewrite_module: code execution and denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-48142",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r4",
+      "description": "nginx: NGINX: Memory disclosure or denial of service via ngx_http_charset_module heap buffer over-read",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-56434",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "nginx",
+      "fixed_in": "1.28.3-r6",
+      "description": "nginx: NGINX: Heap buffer over-read allows memory modification or denial of service",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-103111",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "pcre2",
+      "fixed_in": "10.49-r0",
+      "description": "pcre2: pcre2: Out-of-bounds write via crafted regular expression",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-86145",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "pcre2: PCRE2: Out-of-bounds write allows arbitrary code execution via crafted regular expressions",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89157",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "pcre2: PCRE2: Out-of-bounds write via large pattern input",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89161",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "pcre2: PCRE2: Memory corruption vulnerability in pcre2_jit_match",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89156",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "PCRE2: PCRE2: Out-of-bounds read via invalid UTF data during JIT fallback",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89158",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "PCRE2: PCRE2: Out-of-bounds write via integer overflow on 32-bit platforms",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89160",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "pcre2: PCRE2: Denial of Service via out-of-bounds read during invalid UTF matching",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-89162",
+      "severity": "LOW",
+      "cvss": 3.0,
+      "package": "pcre2",
+      "fixed_in": "10.48-r0",
+      "description": "pcre2: PCRE2: Information disclosure via pcre2_serialize_encode",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-4775",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "tiff",
+      "fixed_in": "4.7.2-r0",
+      "description": "libtiff: libtiff: Arbitrary code execution or denial of service via signed integer overflow in TIFF file processing",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-34743",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "xz-libs",
+      "fixed_in": "5.8.3-r0",
+      "description": "xz: XZ Utils: Denial of Service via buffer overflow in index decoding",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-22184",
+      "severity": "HIGH",
+      "cvss": 8.0,
+      "package": "zlib",
+      "fixed_in": "1.3.2-r0",
+      "description": "zlib: zlib: Arbitrary code execution via buffer overflow in untgz utility",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-27171",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "zlib",
+      "fixed_in": "1.3.2-r0",
+      "description": "zlib: zlib: Denial of Service via infinite loop in CRC32 combine functions",
+      "mitre_technique": "T1190"
+    },
+    {
+      "cve_id": "CVE-2026-85091",
+      "severity": "MEDIUM",
+      "cvss": 5.5,
+      "package": "zlib",
+      "fixed_in": "1.3.2-r1",
+      "description": "zlib versions 1.3.1.2 through 1.3.2 contain a heap buffer overflow vul ...",
+      "mitre_technique": "T1190"
+    }
+  ]
+}

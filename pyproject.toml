@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "k8s-native-scanner"
+version = "1.0.0"
+description = "Pure-Python Kubernetes Security Scanner, Attack Path DAG & Cloud-Native Security Engine"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Kubernetes Native Security Team" }
+]
+keywords = [
+    "kubernetes",
+    "security",
+    "cnapp",
+    "sbom",
+    "sarif",
+    "cyclonedx",
+    "spdx",
+    "attack-graph",
+    "pci-dss",
+    "soc2",
+    "hipaa",
+    "vulnerability-scanner",
+    "admission-controller"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: System :: Systems Administration",
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "coverage>=7.0",
+]
+tls = [
+    "cryptography>=3.4.0",
+]
+
+[project.scripts]
+k8s-native-scan = "cli:main"
+native-sec = "cli:main"

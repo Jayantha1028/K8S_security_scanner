@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Independent executable entrypoint for k8s-native-scanner
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$DIR:${PYTHONPATH}"
+if [ -f "$DIR/native_scanner/cli.py" ]; then
+    exec python3 -m native_scanner.cli "$@"
+else
+    exec python3 "$DIR/cli.py" "$@"
+fi
