@@ -114,6 +114,8 @@ try:
     from .fleet import FleetManager, ClusterRecord, FleetPolicy, FleetDriftSummary
     from .ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
     from .enterprise_server import EnterpriseServer, EnterpriseAPIHandler
+    from .cloud_cspm import CloudCSPMEngine, CloudCSPMReport, CSPMFinding
+    from .crds import KubernetesCRDManager, SecurityPolicySpec
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (

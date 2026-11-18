@@ -51,6 +51,8 @@ try:
     from .fleet import FleetManager, ClusterRecord, FleetPolicy
     from .ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
     from .enterprise_server import EnterpriseServer
+    from .cloud_cspm import CloudCSPMEngine
+    from .crds import KubernetesCRDManager
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -82,6 +84,8 @@ except ImportError:
     from fleet import FleetManager, ClusterRecord, FleetPolicy
     from ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
     from enterprise_server import EnterpriseServer
+    from cloud_cspm import CloudCSPMEngine
+    from crds import KubernetesCRDManager
 
 
 def print_banner():
@@ -909,6 +913,38 @@ def cmd_auth(args):
     return 0
 
 
+def cmd_crd(args):
+    crds = KubernetesCRDManager.get_all_crd_manifests()
+    if getattr(args, "output", None):
+        Path(args.output).write_text(crds, encoding="utf-8")
+        print(f"[✓] Kubernetes CRDs exported to: {args.output}")
+    else:
+        print(crds)
+    return 0
+
+
+def cmd_cspm(args):
+    engine = CloudCSPMEngine()
+    path = Path(args.target)
+    if not path.is_file():
+        print(f"Error: Inventory file '{path}' not found.", file=sys.stderr)
+        return 1
+    inventory = json.loads(path.read_text(encoding="utf-8"))
+    report = engine.evaluate_cloud_inventory(inventory)
+    if getattr(args, "json", False):
+        print(json.dumps(report.to_dict(), indent=2))
+    else:
+        print(f"\n[+] Multi-Cloud Infrastructure CSPM Assessment:")
+        print(f"    Resources Audited : {report.total_resources_audited}")
+        print(f"    CSPM Score        : {report.cspm_score:.1f}/100.0 ({report.risk_tier} Risk)")
+        print(f"    Total Findings    : {len(report.findings)}")
+        print("-" * 80)
+        for f in report.findings[:15]:
+            print(f"  [{f.severity:<8}] {f.cloud_provider.upper()} {f.resource_type}: {f.title}")
+            print(f"             Remediation: {f.remediation}")
+    return 0 if report.cspm_score >= (getattr(args, "min_score", 70.0) or 70.0) else 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -1126,6 +1162,16 @@ def main():
     p_ath.add_argument("--subject", default="admin", help="User or service identity subject")
     p_ath.add_argument("--role", choices=[ROLE_PLATFORM_ADMIN, ROLE_SECURITY_ENGINEER, ROLE_COMPLIANCE_AUDITOR, ROLE_DEVOPS_OPERATOR], default=ROLE_SECURITY_ENGINEER, help="Assigned enterprise RBAC role")
 
+    # crd
+    p_crd = subparsers.add_parser("crd", help="Export turnkey Kubernetes CustomResourceDefinition (CRD) manifests")
+    p_crd.add_argument("-o", "--output", help="Save CRD manifests to a YAML file")
+
+    # cspm
+    p_cspm = subparsers.add_parser("cspm", help="Multi-Cloud Infrastructure Security Posture Management (AWS, GCP, Azure)")
+    p_cspm.add_argument("target", help="Path to cloud resource inventory JSON or HCL manifest")
+    p_cspm.add_argument("--json", action="store_true", help="Output raw JSON results")
+    p_cspm.add_argument("--min-score", type=float, default=70.0, help="Minimum CSPM posture score threshold (default: 70.0)")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1188,6 +1234,10 @@ def main():
         sys.exit(cmd_fleet(args))
     elif args.command == "auth":
         sys.exit(cmd_auth(args))
+    elif args.command == "crd":
+        sys.exit(cmd_crd(args))
+    elif args.command == "cspm":
+        sys.exit(cmd_cspm(args))
 
 
 if __name__ == "__main__":

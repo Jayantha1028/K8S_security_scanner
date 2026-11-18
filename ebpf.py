@@ -311,3 +311,87 @@ class SIEMForwarder:
         out = self.export()
         self._buffer.clear()
         return out
+
+
+def get_native_ebpf_c_source() -> str:
+    """
+    Returns compilable C eBPF kernel program using BPF ring buffers & CO-RE.
+    Can be compiled directly with 'clang -target bpf -O2 -g -c -o k8s_ebpf.o'.
+    """
+    return """// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+#include <vmlinux.h>
+#include <bpf/bpf_helpers.h>
+#include <bpf/bpf_tracing.h>
+
+struct event_t {
+    __u32 pid;
+    char comm[16];
+    char filename[256];
+};
+
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 256 * 1024);
+} ringbuf SEC(".maps");
+
+SEC("tracepoint/syscalls/sys_enter_execve")
+int trace_execve(struct trace_event_raw_sys_enter *ctx) {
+    struct event_t *event;
+    event = bpf_ringbuf_reserve(&ringbuf, sizeof(*event), 0);
+    if (!event) return 0;
+    event->pid = bpf_get_current_pid_tgid() >> 32;
+    bpf_get_current_comm(&event->comm, sizeof(event->comm));
+    bpf_probe_read_user_str(&event->filename, sizeof(event->filename), (const char *)ctx->args[0]);
+    bpf_ringbuf_submit(event, 0);
+    return 0;
+}
+char LICENSE[] SEC("license") = "GPL";
+"""
+
+
+class FalcoBridgeReceiver:
+    """
+    Bridge Adapter to ingest high-rate events from host Falco/Cilium agents.
+    Converts Falco JSON alert payloads into native KernelSecurityEvents.
+    """
+
+    FALCO_RULE_SEV_MAP = {
+        "Notice": "LOW",
+        "Warning": "MEDIUM",
+        "Error": "HIGH",
+        "Critical": "CRITICAL",
+        "Emergency": "CRITICAL",
+    }
+
+    def __init__(self, engine: EBPFTelemetryEngine):
+        self.engine = engine
+
+    def parse_falco_alert(self, alert_json: Dict[str, Any]) -> Optional[KernelSecurityEvent]:
+        """Translates a Falco JSON event into an enterprise KernelSecurityEvent."""
+        fields = alert_json.get("output_fields", {})
+        rule = alert_json.get("rule", "Unknown Rule")
+        priority = alert_json.get("priority", "Warning")
+        sev = self.FALCO_RULE_SEV_MAP.get(priority, "HIGH")
+
+        pid = int(fields.get("proc.pid", fields.get("proc.vpid", 0)))
+        comm = fields.get("proc.name", "unknown")
+        pod_name = fields.get("k8s.pod.name", "unknown-pod")
+        ns = fields.get("k8s.ns.name", "default")
+        container_id = fields.get("container.id", "unknown-cid")[:12]
+
+        evt = KernelSecurityEvent(
+            event_id=f"falco-{int(datetime.now(timezone.utc).timestamp())}",
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            event_type="RUNTIME_INTRUSION",
+            severity=sev,
+            pid=pid,
+            comm=comm,
+            pod_name=pod_name,
+            namespace=ns,
+            container_id=container_id,
+            description=f"Falco Engine Alert [{rule}]: {alert_json.get('output', '')}",
+            details=alert_json,
+            mitre_technique="T1059",
+        )
+        self.engine._events.append(evt)
+        return evt

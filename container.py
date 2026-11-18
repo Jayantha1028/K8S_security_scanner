@@ -504,6 +504,22 @@ class HybridContainerLayerScanner:
                                 content = pom_f.read().decode("utf-8", errors="replace")
                                 for pkg in self._parse_java_pom_xml(content, layer_idx=idx):
                                     packages_dict[pkg.name] = pkg
+
+                        # H. Rust Cargo Lockfiles
+                        elif item.name.endswith("Cargo.lock"):
+                            cargo_f = layer_tf.extractfile(item)
+                            if cargo_f:
+                                content = cargo_f.read().decode("utf-8", errors="replace")
+                                for pkg in self._parse_cargo_lock(content, layer_idx=idx):
+                                    packages_dict[pkg.name] = pkg
+
+                        # I. Python Poetry Lockfiles
+                        elif item.name.endswith("poetry.lock"):
+                            poetry_f = layer_tf.extractfile(item)
+                            if poetry_f:
+                                content = poetry_f.read().decode("utf-8", errors="replace")
+                                for pkg in self._parse_poetry_lock(content, layer_idx=idx):
+                                    packages_dict[pkg.name] = pkg
             except Exception:
                 continue
 
@@ -733,6 +749,36 @@ class HybridContainerLayerScanner:
                 package_type="java",
                 layer_index=layer_idx
             ))
+        return packages
+
+    @staticmethod
+    def _parse_cargo_lock(content: str, layer_idx: int = 0) -> List[InstalledPackage]:
+        packages: List[InstalledPackage] = []
+        for block in re.split(r"\[\[package\]\]", content):
+            name_m = re.search(r'name\s*=\s*"([^"]+)"', block)
+            ver_m = re.search(r'version\s*=\s*"([^"]+)"', block)
+            if name_m and ver_m:
+                packages.append(InstalledPackage(
+                    name=name_m.group(1).strip(),
+                    version=ver_m.group(1).strip(),
+                    package_type="cargo",
+                    layer_index=layer_idx
+                ))
+        return packages
+
+    @staticmethod
+    def _parse_poetry_lock(content: str, layer_idx: int = 0) -> List[InstalledPackage]:
+        packages: List[InstalledPackage] = []
+        for block in re.split(r"\[\[package\]\]", content):
+            name_m = re.search(r'name\s*=\s*"([^"]+)"', block)
+            ver_m = re.search(r'version\s*=\s*"([^"]+)"', block)
+            if name_m and ver_m:
+                packages.append(InstalledPackage(
+                    name=name_m.group(1).strip(),
+                    version=ver_m.group(1).strip(),
+                    package_type="pypi",
+                    layer_index=layer_idx
+                ))
         return packages
 
     @classmethod
