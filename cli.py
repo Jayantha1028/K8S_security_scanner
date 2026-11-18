@@ -39,6 +39,8 @@ try:
     from .cluster_scanner import LiveClusterScanner
     from .gitops import GitOpsRemediator
     from .exporter import PrometheusMetricsExporter
+    from .agent import SecurityAgent, LLMClient
+    from .mcp_server import run_mcp_server
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -58,6 +60,8 @@ except ImportError:
     from cluster_scanner import LiveClusterScanner
     from gitops import GitOpsRemediator
     from exporter import PrometheusMetricsExporter
+    from agent import SecurityAgent, LLMClient
+    from mcp_server import run_mcp_server
 
 
 def print_banner():
@@ -592,6 +596,42 @@ def cmd_export_metrics(args):
     return 0
 
 
+def cmd_agent(args):
+    llm = LLMClient(
+        provider=getattr(args, "provider", "auto") or "auto",
+        api_key=getattr(args, "api_key", None),
+        model=getattr(args, "model", None),
+        base_url=getattr(args, "base_url", None),
+    )
+    agent = SecurityAgent(llm_client=llm)
+
+    if getattr(args, "watch", False):
+        agent.watch_cluster(
+            namespace=getattr(args, "namespace", None),
+            interval_seconds=getattr(args, "interval", 60) or 60,
+            alert_webhook_url=getattr(args, "alert_webhook", None),
+        )
+        return 0
+
+    prompt = args.prompt or "Perform an end-to-end security assessment, prune lateral false positives, and propose GitOps remediations."
+    target = getattr(args, "target", None)
+
+    print(f"[AI Agent] Initializing ReAct loop (Provider: {llm.provider}, Model: {llm.model})...")
+    res = agent.reason_and_act(prompt, target=target, max_steps=getattr(args, "max_steps", 5) or 5)
+
+    print("\n" + "=" * 80)
+    print("                 AUTONOMOUS KUBERNETES SECURITY AI AGENT REPORT")
+    print("=" * 80)
+    print(res["final_answer"])
+    print("=" * 80)
+    return 0
+
+
+def cmd_mcp(args):
+    run_mcp_server()
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -724,6 +764,23 @@ def main():
     p_exp.add_argument("--port", type=int, default=9108, help="HTTP port to listen on (default: 9108)")
     p_exp.add_argument("--host", default="0.0.0.0", help="Host address to bind to (default: 0.0.0.0)")
 
+    # agent
+    p_agt = subparsers.add_parser("agent", help="Autonomous Kubernetes Security AI Agent (ReAct reasoning & In-Cluster Watch)")
+    p_agt.add_argument("target", nargs="?", default=".", help="Target manifest path or directory (default: current dir)")
+    p_agt.add_argument("-p", "--prompt", help="Natural language security question or task description")
+    p_agt.add_argument("--provider", choices=["auto", "gemini", "openai", "anthropic", "ollama", "local"], default="auto", help="LLM Provider")
+    p_agt.add_argument("--model", help="LLM model name (e.g. gemini-1.5-flash, gpt-4o, llama3.2)")
+    p_agt.add_argument("--api-key", help="API key for LLM provider (or pass via env vars)")
+    p_agt.add_argument("--base-url", help="Base URL for OpenAI-compatible or Ollama endpoints")
+    p_agt.add_argument("--max-steps", type=int, default=5, help="Maximum ReAct reasoning and tool-calling steps")
+    p_agt.add_argument("--watch", action="store_true", help="Run continuous in-cluster watch daemon")
+    p_agt.add_argument("-n", "--namespace", help="Namespace for in-cluster watch daemon")
+    p_agt.add_argument("--interval", type=int, default=60, help="Interval seconds between cluster audit cycles")
+    p_agt.add_argument("--alert-webhook", help="Webhook URL to POST high-priority drift alerts (Slack/PagerDuty)")
+
+    # mcp
+    p_mcp = subparsers.add_parser("mcp", help="Run standard Model Context Protocol (MCP) JSON-RPC 2.0 server over stdio")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -763,6 +820,11 @@ def main():
     elif args.command == "gitops":
         sys.exit(cmd_gitops(args))
     elif args.command == "export-metrics":
+        sys.exit(cmd_export_metrics(args))
+    elif args.command == "agent":
+        sys.exit(cmd_agent(args))
+    elif args.command == "mcp":
+        sys.exit(cmd_mcp(args))
         sys.exit(cmd_export_metrics(args))
 
 

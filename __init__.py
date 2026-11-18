@@ -85,6 +85,8 @@ try:
     from .cluster_scanner import LiveClusterScanner, LiveClusterReport, WorkloadAuditResult
     from .gitops import GitOpsRemediator, GitOpsRemediationPlan, WorkloadRemediationDiff
     from .exporter import PrometheusMetricsExporter
+    from .agent import SecurityAgent, LLMClient
+    from .mcp_server import MCPServer
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -144,6 +146,8 @@ except ImportError:
     from cluster_scanner import LiveClusterScanner, LiveClusterReport, WorkloadAuditResult
     from gitops import GitOpsRemediator, GitOpsRemediationPlan, WorkloadRemediationDiff
     from exporter import PrometheusMetricsExporter
+    from agent import SecurityAgent, LLMClient
+    from mcp_server import MCPServer
 
 KillChain = KillChainPath
 
@@ -205,4 +209,7 @@ __all__ = [
     "GitOpsRemediationPlan",
     "WorkloadRemediationDiff",
     "PrometheusMetricsExporter",
+    "SecurityAgent",
+    "LLMClient",
+    "MCPServer",
 ]
