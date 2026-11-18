@@ -52,7 +52,7 @@ jobs:
       - name: Generate Checksum
         run: |
           cd dist
-          sha256sum ${{ matrix.binary_name }} > ${{ matrix.binary_name }}.sha256
+          which sha256sum >/dev/null 2>&1 && sha256sum ${{ matrix.binary_name }} > ${{ matrix.binary_name }}.sha256 || shasum -a 256 ${{ matrix.binary_name }} > ${{ matrix.binary_name }}.sha256
 
       - name: Upload Binary Artifact
         uses: actions/upload-artifact@v4
@@ -106,7 +106,7 @@ jobs:
 
       - name: Sign Container Image with Cosign (Keyless)
         run: |
-          cosign sign --yes "${{ steps.meta.outputs.tags }}"
+          echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign --yes {}@${{ steps.build-push.outputs.digest }}
 
   create-github-release:
     name: Create GitHub Release with Artifacts
@@ -121,20 +121,20 @@ jobs:
         with:
           path: release-artifacts
 
-      - name: Consolidate Artifacts
+      - name: Consolidate Artifacts & Package Helm
         run: |
           mkdir -p dist
           find release-artifacts -type f -exec cp {} dist/ \;
+          tar -czvf dist/k8s-native-scanner-helm.tar.gz -C deploy/helm k8s-native-scanner
+          cp deploy/k8s/turnkey-operator.yaml dist/
           cd dist
-          sha256sum * > SHA256SUMS.txt || true
+          sha256sum * > SHA256SUMS.txt || shasum -a 256 * > SHA256SUMS.txt || true
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/*
-            deploy/helm/k8s-native-scanner
-            deploy/k8s/turnkey-operator.yaml
           draft: false
           prerelease: false
           generate_release_notes: true

@@ -259,8 +259,9 @@ def cmd_scan(args):
             else:
                 print(json.dumps(report.to_dict(), indent=2))
 
-        if args.min_score and report.compliance_score < args.min_score:
-            print(f"\n[!] Security Gate FAILED: Score {report.compliance_score:.1f} < threshold {args.min_score}")
+        min_threshold = args.min_score or (75.0 if getattr(args, "ci_check", False) else None)
+        if min_threshold and report.compliance_score < min_threshold:
+            print(f"\n[!] Security Gate FAILED: Score {report.compliance_score:.1f} < threshold {min_threshold}")
             return 1
         return 0
 
@@ -1031,6 +1032,7 @@ def main():
     p_scan.add_argument("--compliance", action="store_true", help="Evaluate regulatory compliance")
     p_scan.add_argument("--cert-output", help="Save Markdown compliance certificate")
     p_scan.add_argument("--min-score", type=float, help="Fail CI/CD if compliance score is below threshold (0-100)")
+    p_scan.add_argument("--ci-check", action="store_true", help="Fail CI/CD if compliance score is below minimum threshold")
     p_scan.add_argument("--rules-dir", help="Path to declarative rules directory")
     p_scan.add_argument("--rule-file", help="Path to a single custom declarative rule file")
     p_scan.add_argument("--no-recursive", action="store_true", help="Do not recursively traverse subdirectories")
@@ -1059,6 +1061,7 @@ def main():
     p_comp = subparsers.add_parser("compliance", help="Evaluate multi-framework regulatory compliance")
     p_comp.add_argument("target", help="YAML manifest or directory")
     p_comp.add_argument("-o", "--output", help="Save Markdown compliance certificate to file")
+    p_comp.add_argument("--framework", default="all", help="Target regulatory framework (e.g. all, pci-dss, soc2, hipaa, iso27001, nist, waf)")
 
     # bundle
     p_bnd = subparsers.add_parser("bundle", help="Export, verify, and import offline air-gapped sovereign bundles")
