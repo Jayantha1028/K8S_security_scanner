@@ -779,18 +779,30 @@ class NativeSecurityScanner:
                     pass
 
     def _extract_pod_spec(self, doc: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(doc, dict):
+            return {}
         kind = doc.get("kind", "")
-        spec = doc.get("spec", {}) or {}
+        spec = doc.get("spec", {})
+        if not isinstance(spec, dict):
+            return {}
         if kind == "Pod":
             return spec
         if kind in {"Deployment", "StatefulSet", "DaemonSet", "Job"}:
-            tmpl = spec.get("template", {}) or {}
-            return tmpl.get("spec", {}) or {}
+            tmpl = spec.get("template", {})
+            if isinstance(tmpl, dict):
+                p_spec = tmpl.get("spec", {})
+                return p_spec if isinstance(p_spec, dict) else {}
+            return {}
         if kind == "CronJob":
-            j_tmpl = spec.get("jobTemplate", {}) or {}
-            j_spec = j_tmpl.get("spec", {}) or {}
-            tmpl = j_spec.get("template", {}) or {}
-            return tmpl.get("spec", {}) or {}
+            j_tmpl = spec.get("jobTemplate", {})
+            if isinstance(j_tmpl, dict):
+                j_spec = j_tmpl.get("spec", {})
+                if isinstance(j_spec, dict):
+                    tmpl = j_spec.get("template", {})
+                    if isinstance(tmpl, dict):
+                        p_spec = tmpl.get("spec", {})
+                        return p_spec if isinstance(p_spec, dict) else {}
+            return {}
         return {}
 
     def _audit_pod_spec(self, pod_spec: Dict[str, Any], workload_name: str, report: ScanReport, doc_metadata: Optional[Dict[str, Any]] = None):
@@ -850,12 +862,25 @@ class NativeSecurityScanner:
                               remed="Enable automatic mTLS sidecar injection (e.g. sidecar.istio.io/inject: 'true')")
 
         # 5. Volumes & HostPaths (Refined Severity & Read-Only Distinction)
-        volumes = pod_spec.get("volumes") or []
-        all_workload_containers = (pod_spec.get("containers") or []) + (pod_spec.get("initContainers") or [])
+        raw_volumes = pod_spec.get("volumes")
+        volumes = raw_volumes if isinstance(raw_volumes, list) else []
+        raw_c = pod_spec.get("containers")
+        c_list = raw_c if isinstance(raw_c, list) else []
+        raw_inits = pod_spec.get("initContainers")
+        init_list = raw_inits if isinstance(raw_inits, list) else []
+        raw_eph = pod_spec.get("ephemeralContainers")
+        eph_list = raw_eph if isinstance(raw_eph, list) else []
+        containers = c_list + init_list + eph_list
+        all_workload_containers = containers
         for v in volumes:
             if isinstance(v, dict) and "hostPath" in v:
                 hp = v.get("hostPath", {}) or {}
-                hp_path = str(hp.get("path", "")).strip()
+                if isinstance(hp, str):
+                    hp_path = hp.strip()
+                elif isinstance(hp, dict):
+                    hp_path = str(hp.get("path") or "").strip()
+                else:
+                    hp_path = ""
                 v_name = v.get("name", "volume")
                 hp_target = f"{workload_name}:{v_name}"
 
@@ -899,8 +924,8 @@ class NativeSecurityScanner:
                                       remed="Use PersistentVolumeClaims or emptyDir instead of hostPath")
 
         # 6. Containers & SecurityContext
-        containers = (pod_spec.get("containers") or []) + (pod_spec.get("initContainers") or [])
-        pod_sec = pod_spec.get("securityContext", {}) or {}
+        pod_sec = pod_spec.get("securityContext", {}) if isinstance(pod_spec, dict) else {}
+        pod_sec = pod_sec if isinstance(pod_sec, dict) else {}
 
         for c in containers:
             if not isinstance(c, dict):
@@ -936,9 +961,23 @@ class NativeSecurityScanner:
                                   remed="Set securityContext.readOnlyRootFilesystem: true")
 
             # Capabilities
-            caps = c_sec.get("capabilities", {}) or {}
-            added_caps = [str(x).upper() for x in (caps.get("add") or [])]
-            dropped_caps = [str(x).upper() for x in (caps.get("drop") or [])]
+            caps = c_sec.get("capabilities") if isinstance(c_sec, dict) else {}
+            caps = caps if isinstance(caps, dict) else {}
+            raw_add = caps.get("add")
+            if isinstance(raw_add, list):
+                added_caps = [str(x).upper() for x in raw_add if x is not None]
+            elif isinstance(raw_add, str):
+                added_caps = [raw_add.upper()]
+            else:
+                added_caps = []
+
+            raw_drop = caps.get("drop")
+            if isinstance(raw_drop, list):
+                dropped_caps = [str(x).upper() for x in raw_drop if x is not None]
+            elif isinstance(raw_drop, str):
+                dropped_caps = [raw_drop.upper()]
+            else:
+                dropped_caps = []
 
             if "ALL" not in dropped_caps:
                 self._add_finding(report, "V08", target=c_target,
@@ -959,15 +998,25 @@ class NativeSecurityScanner:
                                   remed="Remove CAP_SYS_PTRACE")
 
             # Seccomp Profile
-            seccomp = c_sec.get("seccompProfile") or pod_sec.get("seccompProfile") or {}
-            if seccomp.get("type") not in {"RuntimeDefault", "Localhost"}:
+            seccomp = c_sec.get("seccompProfile") if isinstance(c_sec, dict) else None
+            if not seccomp and isinstance(pod_sec, dict):
+                seccomp = pod_sec.get("seccompProfile")
+            if isinstance(seccomp, str):
+                seccomp_type = seccomp
+            elif isinstance(seccomp, dict):
+                seccomp_type = str(seccomp.get("type") or "")
+            else:
+                seccomp_type = ""
+            if seccomp_type not in {"RuntimeDefault", "Localhost"}:
                 self._add_finding(report, "V12", target=c_target,
                                   desc="Missing Seccomp Profile (RuntimeDefault not configured)",
                                   remed="Set seccompProfile.type: RuntimeDefault")
 
             # Resource Bounds
-            resources = c.get("resources", {}) or {}
-            limits = resources.get("limits", {}) or {}
+            resources = c.get("resources") if isinstance(c, dict) else {}
+            resources = resources if isinstance(resources, dict) else {}
+            limits = resources.get("limits") if isinstance(resources, dict) else {}
+            limits = limits if isinstance(limits, dict) else {}
             if "cpu" not in limits:
                 self._add_finding(report, "V13", target=c_target,
                                   desc="Missing CPU limit (vulnerable to resource exhaustion/DoS)",
@@ -1088,11 +1137,17 @@ class NativeSecurityScanner:
                                           remed="Mount secrets as read-only volume files under /etc/secrets rather than environment variables")
 
             # V33: Direct hostPort Allocation
-            for port_def in c.get("ports", []):
-                if isinstance(port_def, dict) and port_def.get("hostPort"):
-                    self._add_finding(report, "V33", target=f"{c_target}:port-{port_def.get('hostPort')}",
-                                      desc=f"Direct hostPort {port_def.get('hostPort')} allocated, exposing port directly on node interface",
-                                      remed="Remove hostPort and expose application using ClusterIP Services with Ingress")
+            c_ports = c.get("ports") if isinstance(c, dict) else []
+            c_ports = c_ports if isinstance(c_ports, list) else []
+            for port_def in c_ports:
+                if isinstance(port_def, dict) and port_def.get("hostPort") is not None:
+                    hp_val = port_def.get("hostPort")
+                    if str(hp_val).lstrip("-").isdigit():
+                        hp_int = int(hp_val)
+                        if hp_int != 0:
+                            self._add_finding(report, "V33", target=f"{c_target}:port-{hp_int}",
+                                              desc=f"Direct hostPort {hp_int} allocated, exposing port directly on node interface",
+                                              remed="Remove hostPort and expose application using ClusterIP Services with Ingress")
 
             # V51: Interactive Shell / TTY Configured
             if c.get("stdin") is True or c.get("tty") is True:
@@ -1101,33 +1156,43 @@ class NativeSecurityScanner:
                                   remed="Disable stdin: false and tty: false in production manifests")
 
             # V52: Reconnaissance / Network Attack Tools
-            cmd_args = " ".join([str(x) for x in (c.get("command") or []) + (c.get("args") or [])]).lower()
+            raw_cmd = c.get("command")
+            cmd_items = [raw_cmd] if isinstance(raw_cmd, str) else (raw_cmd if isinstance(raw_cmd, list) else [])
+            raw_args = c.get("args")
+            arg_items = [raw_args] if isinstance(raw_args, str) else (raw_args if isinstance(raw_args, list) else [])
+            cmd_args = " ".join([str(x) for x in cmd_items + arg_items if x is not None]).lower()
             recon_tools = ("nmap", "tcpdump", "wireshark", "masscan", "netcat", "nc -l", "nc -e", "socat", "hydra", "tshark")
             if any(tool in cmd_args for tool in recon_tools):
                 self._add_finding(report, "V52", target=c_target,
                                   desc=f"Offensive network reconnaissance tool detected in container command/args: {cmd_args[:60]}",
                                   remed="Remove network scanner/penetration binaries from production entrypoints")
 
-            # V53: Writable volume mount on system directory
-            for vm in c.get("volumeMounts", []):
+            # V53, V54, V56: Volume Mounts Checks with Safe Nil Handling
+            c_vms = c.get("volumeMounts") if isinstance(c, dict) else []
+            c_vms = c_vms if isinstance(c_vms, list) else []
+            for vm in c_vms:
                 if isinstance(vm, dict):
-                    m_path = vm.get("mountPath", "")
-                    is_ro = vm.get("readOnly", False)
-                    if not is_ro and any(m_path == p or m_path.startswith(p + "/") for p in ("/etc", "/usr/bin", "/bin", "/sbin", "/usr/sbin", "/lib")):
-                        self._add_finding(report, "V53", target=f"{c_target}:{m_path}",
-                                          desc=f"Writable volume mount on system directory '{m_path}' risks binary hijacking or OS subversion",
-                                          remed=f"Set readOnly: true on mount {m_path} or use non-system target path")
+                    m_path = str(vm.get("mountPath") or "").strip()
+                    is_ro = bool(vm.get("readOnly", False))
+                    if m_path:
+                        if not is_ro and any(m_path == p or m_path.startswith(p + "/") for p in ("/etc", "/usr/bin", "/bin", "/sbin", "/usr/sbin", "/lib")):
+                            self._add_finding(report, "V53", target=f"{c_target}:{m_path}",
+                                              desc=f"Writable volume mount on system directory '{m_path}' risks binary hijacking or OS subversion",
+                                              remed=f"Set readOnly: true on mount {m_path} or use non-system target path")
+                        if "/lib/modules" in m_path:
+                            self._add_finding(report, "V54", target=f"{c_target}:/lib/modules",
+                                              desc="Host kernel modules directory (/lib/modules) mounted into container",
+                                              remed="Remove volume mount to /lib/modules")
+                        if any(m_path.startswith(p) for p in ("/dev/mem", "/dev/kmem", "/proc/kcore", "/proc/sys", "/sys/firmware")):
+                            self._add_finding(report, "V56", target=f"{c_target}:{m_path}",
+                                              desc=f"Sensitive host kernel memory path '{m_path}' mounted into container",
+                                              remed=f"Remove volume mount {m_path} to prevent kernel memory disclosure")
 
             # V54: Kernel Module Loading Capability
             if any(cap in added_caps for cap in ("CAP_SYS_MODULE", "SYS_MODULE")):
                 self._add_finding(report, "V54", target=c_target,
                                   desc="CAP_SYS_MODULE capability added, allowing container to load rootkits or kernel modules into host kernel",
                                   remed="Remove CAP_SYS_MODULE from capabilities.add")
-            for vm in c.get("volumeMounts", []):
-                if isinstance(vm, dict) and "/lib/modules" in vm.get("mountPath", ""):
-                    self._add_finding(report, "V54", target=f"{c_target}:/lib/modules",
-                                      desc="Host kernel modules directory (/lib/modules) mounted into container",
-                                      remed="Remove volume mount to /lib/modules")
 
             # V55: Crypto-Mining Indicators
             mining_indicators = ("stratum+tcp://", "stratum+ssl://", "xmrig", "minergate", "supportxmr.com", "nanopool.org", "moneroocean")
@@ -1136,23 +1201,19 @@ class NativeSecurityScanner:
                                   desc="Crypto-mining pool endpoint or mining software detected in container command/args",
                                   remed="Remove unauthorized mining processes and review workload authenticity")
 
-            # V56: Sensitive Host Memory / Kernel Files Mounted
-            for vm in c.get("volumeMounts", []):
-                if isinstance(vm, dict):
-                    mp = vm.get("mountPath", "")
-                    if any(mp.startswith(p) for p in ("/dev/mem", "/dev/kmem", "/proc/kcore", "/proc/sys", "/sys/firmware")):
-                        self._add_finding(report, "V56", target=f"{c_target}:{mp}",
-                                          desc=f"Sensitive host kernel memory path '{mp}' mounted into container",
-                                          remed=f"Remove volume mount {mp} to prevent kernel memory disclosure")
-
     def _audit_rbac_role(self, doc: Dict[str, Any], report: ScanReport):
-        role_name = doc.get("metadata", {}).get("name", "role")
-        rules = doc.get("rules") or []
+        metadata = doc.get("metadata") if isinstance(doc, dict) else {}
+        metadata = metadata if isinstance(metadata, dict) else {}
+        role_name = str(metadata.get("name") or "role")
+        rules = doc.get("rules") if isinstance(doc, dict) else []
+        rules = rules if isinstance(rules, list) else []
         for r in rules:
             if not isinstance(r, dict):
                 continue
-            res = r.get("resources") or []
-            verbs = r.get("verbs") or []
+            raw_res = r.get("resources")
+            res = raw_res if isinstance(raw_res, list) else ([raw_res] if isinstance(raw_res, str) else [])
+            raw_verbs = r.get("verbs")
+            verbs = raw_verbs if isinstance(raw_verbs, list) else ([raw_verbs] if isinstance(raw_verbs, str) else [])
             if "*" in res:
                 self._add_finding(report, "V24", target=role_name,
                                   desc="Wildcard resource access granted in RBAC (resources: ['*'])",
@@ -1278,7 +1339,11 @@ class NativeSecurityScanner:
 
         # V34: Overly permissive CIDR 0.0.0.0/0 on sensitive ports
         sensitive_ports = {22, 2379, 2380, 6443, 10250, 10255, 3306, 5432, 6379, 9200, 27017}
-        all_rules = (spec.get("ingress") or []) + (spec.get("egress") or [])
+        raw_ing = spec.get("ingress") if isinstance(spec, dict) else []
+        ing_rules = raw_ing if isinstance(raw_ing, list) else []
+        raw_egr = spec.get("egress") if isinstance(spec, dict) else []
+        egr_rules = raw_egr if isinstance(raw_egr, list) else []
+        all_rules = ing_rules + egr_rules
         for rule in all_rules:
             if not isinstance(rule, dict):
                 continue

@@ -179,19 +179,33 @@ class AdmissionSecurityEngine:
         if not changes:
             return []
 
+        if not isinstance(obj, dict):
+            return []
+
         # If securityContext was added or changed on template/spec
         patches = []
-        kind = obj.get("kind", "")
+        kind = str(obj.get("kind") or "")
+        orig_spec = obj.get("spec")
+        orig_spec = orig_spec if isinstance(orig_spec, dict) else {}
+
         if kind in ("Deployment", "DaemonSet", "StatefulSet", "Job"):
-            spec = hardened.get("spec", {}).get("template", {}).get("spec", {})
+            h_spec = hardened.get("spec") if isinstance(hardened, dict) else {}
+            h_tmpl = h_spec.get("template") if isinstance(h_spec, dict) else {}
+            spec = h_tmpl.get("spec") if isinstance(h_tmpl, dict) else {}
             target_path = "/spec/template/spec"
+            orig_tmpl = orig_spec.get("template") if isinstance(orig_spec, dict) else {}
+            orig_tmpl = orig_tmpl if isinstance(orig_tmpl, dict) else {}
+            orig_t_spec = orig_tmpl.get("spec") if isinstance(orig_tmpl, dict) else {}
+            orig_sec = orig_t_spec.get("securityContext") if isinstance(orig_t_spec, dict) else None
         else:
-            spec = hardened.get("spec", {})
+            spec = hardened.get("spec") if isinstance(hardened, dict) else {}
             target_path = "/spec"
+            orig_sec = orig_spec.get("securityContext") if isinstance(orig_spec, dict) else None
+
+        spec = spec if isinstance(spec, dict) else {}
 
         # Patch pod-level security context
         if "securityContext" in spec:
-            orig_sec = obj.get("spec", {}).get("securityContext") if kind == "Pod" else obj.get("spec", {}).get("template", {}).get("spec", {}).get("securityContext")
             op = "replace" if orig_sec is not None else "add"
             patches.append({
                 "op": op,

@@ -110,9 +110,11 @@ class AttackGraphEngine:
             if not isinstance(doc, dict):
                 continue
             kind = doc.get("kind", "")
-            meta = doc.get("metadata", {})
-            name = meta.get("name", "unnamed")
-            ns = "cluster" if kind in ("ClusterRole", "ClusterRoleBinding") else meta.get("namespace", "default")
+            meta = doc.get("metadata", {}) or {}
+            if not isinstance(meta, dict):
+                meta = {}
+            name = str(meta.get("name") or "unnamed")
+            ns = "cluster" if kind in ("ClusterRole", "ClusterRoleBinding") else str(meta.get("namespace") or "default")
             node_id = f"{kind}:{ns}/{name}"
 
             if kind in ("Pod", "Deployment", "StatefulSet", "DaemonSet", "Job", "CronJob"):
@@ -327,8 +329,9 @@ class AttackGraphEngine:
 
         # Pass 3: Process Services & Ingresses (Entrypoints)
         for doc, node_id, ns, name in services:
-            spec = doc.get("spec", {})
-            svc_type = spec.get("type", "ClusterIP")
+            spec = doc.get("spec", {}) if isinstance(doc, dict) else {}
+            spec = spec if isinstance(spec, dict) else {}
+            svc_type = str(spec.get("type") or "ClusterIP")
             is_entry = svc_type in ("NodePort", "LoadBalancer")
             self.add_node(AttackNode(
                 id=node_id,
@@ -340,11 +343,15 @@ class AttackGraphEngine:
                 metadata={"type": svc_type}
             ))
             # Match service selector to workloads
-            selector = spec.get("selector", {})
+            selector = spec.get("selector", {}) if isinstance(spec, dict) else {}
+            selector = selector if isinstance(selector, dict) else {}
             if selector:
                 for w_doc, w_id, w_ns, w_name in workloads:
                     if w_ns == ns:
-                        w_labels = w_doc.get("metadata", {}).get("labels", {})
+                        w_meta = w_doc.get("metadata", {}) if isinstance(w_doc, dict) else {}
+                        w_meta = w_meta if isinstance(w_meta, dict) else {}
+                        w_labels = w_meta.get("labels", {}) if isinstance(w_meta, dict) else {}
+                        w_labels = w_labels if isinstance(w_labels, dict) else {}
                         if all(w_labels.get(k) == v for k, v in selector.items()):
                             w_is_net_prot = w_id in protected_workloads
                             edge_wt = (2.0 if is_entry else 0.5) if w_is_net_prot else (4.0 if is_entry else 1.0)
@@ -361,6 +368,10 @@ class AttackGraphEngine:
                             ))
 
         for doc, node_id, ns, name in ingresses:
+            ing_spec = doc.get("spec", {}) if isinstance(doc, dict) else {}
+            ing_spec = ing_spec if isinstance(ing_spec, dict) else {}
+            raw_rules = ing_spec.get("rules")
+            rules_list = raw_rules if isinstance(raw_rules, list) else []
             self.add_node(AttackNode(
                 id=node_id,
                 kind="Ingress",
@@ -368,12 +379,20 @@ class AttackGraphEngine:
                 namespace=ns,
                 risk_score=75.0,
                 is_external_entrypoint=True,
-                metadata={"rules": len(doc.get("spec", {}).get("rules", []))}
+                metadata={"rules": len(rules_list)}
             ))
             # Connect Ingress to backend Services
-            for rule in doc.get("spec", {}).get("rules", []):
-                for path in rule.get("http", {}).get("paths", []):
-                    backend_svc = path.get("backend", {}).get("service", {}).get("name")
+            for rule in rules_list:
+                if not isinstance(rule, dict):
+                    continue
+                http_obj = rule.get("http", {}) if isinstance(rule, dict) else {}
+                http_obj = http_obj if isinstance(http_obj, dict) else {}
+                raw_paths = http_obj.get("paths")
+                paths_list = raw_paths if isinstance(raw_paths, list) else []
+                for path in paths_list:
+                    if not isinstance(path, dict):
+                        continue
+                    backend_svc = path.get("backend", {}).get("service", {}).get("name") if isinstance(path.get("backend"), dict) and isinstance(path.get("backend").get("service"), dict) else None
                     if backend_svc:
                         svc_id = f"Service:{ns}/{backend_svc}"
                         if svc_id in self.nodes:

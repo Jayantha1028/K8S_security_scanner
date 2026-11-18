@@ -178,9 +178,11 @@ class KubeCamEngine:
         self.filmstrip_history.append(frame)
         return frame
 
-    def diff_frames(self, frame_before: KubeCamFrame, frame_after: KubeCamFrame) -> List[SecurityDriftDelta]:
+    def diff_frames(self, frame_before: Optional[KubeCamFrame], frame_after: Optional[KubeCamFrame]) -> List[SecurityDriftDelta]:
         """Compares two camera frames and extracts security posture drift."""
         deltas: List[SecurityDriftDelta] = []
+        if not frame_before or not frame_after:
+            return deltas
         before_ids = set(frame_before.workloads.keys())
         after_ids = set(frame_after.workloads.keys())
 

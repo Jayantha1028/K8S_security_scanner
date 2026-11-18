@@ -30,19 +30,51 @@ import yaml
 
 def _get_pod_spec(workload_dict: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], str]:
     """Retrieve the mutable pod spec dictionary and path prefix based on workload kind."""
+    if not isinstance(workload_dict, dict):
+        return None, ""
     kind = workload_dict.get("kind", "")
     if kind == "Pod":
-        return workload_dict.setdefault("spec", {}), "spec"
+        spec = workload_dict.get("spec")
+        if not isinstance(spec, dict):
+            spec = {}
+            workload_dict["spec"] = spec
+        return spec, "spec"
     elif kind in ("Deployment", "DaemonSet", "StatefulSet", "Job", "ReplicaSet"):
-        spec = workload_dict.setdefault("spec", {})
-        template = spec.setdefault("template", {})
-        return template.setdefault("spec", {}), "spec.template.spec"
+        spec = workload_dict.get("spec")
+        if not isinstance(spec, dict):
+            spec = {}
+            workload_dict["spec"] = spec
+        template = spec.get("template")
+        if not isinstance(template, dict):
+            template = {}
+            spec["template"] = template
+        p_spec = template.get("spec")
+        if not isinstance(p_spec, dict):
+            p_spec = {}
+            template["spec"] = p_spec
+        return p_spec, "spec.template.spec"
     elif kind == "CronJob":
-        spec = workload_dict.setdefault("spec", {})
-        job_template = spec.setdefault("jobTemplate", {})
-        j_spec = job_template.setdefault("spec", {})
-        template = j_spec.setdefault("template", {})
-        return template.setdefault("spec", {}), "spec.jobTemplate.spec.template.spec"
+        spec = workload_dict.get("spec")
+        if not isinstance(spec, dict):
+            spec = {}
+            workload_dict["spec"] = spec
+        job_template = spec.get("jobTemplate")
+        if not isinstance(job_template, dict):
+            job_template = {}
+            spec["jobTemplate"] = job_template
+        j_spec = job_template.get("spec")
+        if not isinstance(j_spec, dict):
+            j_spec = {}
+            job_template["spec"] = j_spec
+        template = j_spec.get("template")
+        if not isinstance(template, dict):
+            template = {}
+            j_spec["template"] = template
+        p_spec = template.get("spec")
+        if not isinstance(p_spec, dict):
+            p_spec = {}
+            template["spec"] = p_spec
+        return p_spec, "spec.jobTemplate.spec.template.spec"
     return None, ""
 
 
@@ -117,7 +149,8 @@ def remediate_workload_dict(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[
         changes_applied.append("Applied RuntimeDefault seccomp profile")
 
     # 3. Container-level hardening & Safe Volume Padding
-    containers = pod_spec.get("containers", [])
+    raw_c = pod_spec.get("containers")
+    containers = raw_c if isinstance(raw_c, list) else []
     needed_volumes: Dict[str, Dict[str, Any]] = {}
 
     pad_enabled = (
@@ -126,6 +159,8 @@ def remediate_workload_dict(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[
     )
 
     for c in containers:
+        if not isinstance(c, dict):
+            continue
         c_name = c.get("name", "container")
         c_sec = c.setdefault("securityContext", {})
         if c_sec.get("privileged"):

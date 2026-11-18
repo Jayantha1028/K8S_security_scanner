@@ -151,28 +151,42 @@ class ContextualVEXEngine:
 
     def parse_workload_profile(self, manifest_dict: Dict[str, Any]) -> RuntimeWorkloadProfile:
         """Extracts securityContext, capabilities, volumes, and network metadata from manifest."""
-        kind = manifest_dict.get("kind", "Deployment")
-        meta = manifest_dict.get("metadata", {})
-        name = meta.get("name", "workload")
-        namespace = meta.get("namespace", "default")
+        if not isinstance(manifest_dict, dict):
+            manifest_dict = {}
+        kind = str(manifest_dict.get("kind") or "Deployment")
+        meta = manifest_dict.get("metadata")
+        meta = meta if isinstance(meta, dict) else {}
+        name = str(meta.get("name") or "workload")
+        namespace = str(meta.get("namespace") or "default")
 
-        # Resolve Pod template spec
+        # Resolve Pod template spec safely
+        spec_dict = manifest_dict.get("spec")
+        spec_dict = spec_dict if isinstance(spec_dict, dict) else {}
         if kind == "Pod":
-            spec = manifest_dict.get("spec", {})
+            spec = spec_dict
         else:
-            spec = manifest_dict.get("spec", {}).get("template", {}).get("spec", {})
+            tmpl = spec_dict.get("template")
+            tmpl = tmpl if isinstance(tmpl, dict) else {}
+            tmpl_spec = tmpl.get("spec")
+            spec = tmpl_spec if isinstance(tmpl_spec, dict) else {}
 
-        pod_sc = spec.get("securityContext", {})
-        containers = spec.get("containers", [])
+        pod_sc = spec.get("securityContext")
+        pod_sc = pod_sc if isinstance(pod_sc, dict) else {}
+        raw_containers = spec.get("containers")
+        containers = [c for c in raw_containers if isinstance(c, dict)] if isinstance(raw_containers, list) else []
         primary_c = containers[0] if containers else {}
-        c_sc = primary_c.get("securityContext", {})
+        c_sc = primary_c.get("securityContext")
+        c_sc = c_sc if isinstance(c_sc, dict) else {}
 
-        image = primary_c.get("image", "unknown:latest")
+        image = str(primary_c.get("image") or "unknown:latest")
 
         # Extract capabilities
-        c_caps = c_sc.get("capabilities", {})
-        dropped = set(c_caps.get("drop", []))
-        added = set(c_caps.get("add", []))
+        c_caps = c_sc.get("capabilities")
+        c_caps = c_caps if isinstance(c_caps, dict) else {}
+        raw_dropped = c_caps.get("drop")
+        dropped = set(str(x) for x in raw_dropped if x is not None) if isinstance(raw_dropped, (list, set)) else set()
+        raw_added = c_caps.get("add")
+        added = set(str(x) for x in raw_added if x is not None) if isinstance(raw_added, (list, set)) else set()
 
         # Check host namespaces
         host_net = bool(spec.get("hostNetwork", False))
@@ -181,9 +195,17 @@ class ContextualVEXEngine:
 
         # Check hostPath volumes
         host_paths = []
-        for vol in spec.get("volumes", []):
-            if "hostPath" in vol:
-                host_paths.append(vol["hostPath"].get("path", "/"))
+        raw_vols = spec.get("volumes")
+        vols_list = raw_vols if isinstance(raw_vols, list) else []
+        for vol in vols_list:
+            if isinstance(vol, dict) and "hostPath" in vol:
+                hp = vol.get("hostPath")
+                if isinstance(hp, dict):
+                    host_paths.append(str(hp.get("path") or "/"))
+                elif isinstance(hp, str):
+                    host_paths.append(hp)
+                else:
+                    host_paths.append("/")
 
         # Privileged / NonRoot
         is_priv = bool(c_sc.get("privileged", False))
@@ -309,12 +331,17 @@ class ContextualVEXEngine:
         """
         Audits a Kubernetes manifest and correlates its container CVEs into an OpenVEX document.
         """
-        # Load YAML
-        p = Path(manifest_path_or_yaml)
-        if p.is_file():
-            raw = p.read_text(encoding="utf-8")
-        else:
-            raw = manifest_path_or_yaml
+        # Load YAML safely with type checking
+        raw = ""
+        if manifest_path_or_yaml:
+            try:
+                p = Path(manifest_path_or_yaml)
+                if p.is_file():
+                    raw = p.read_text(encoding="utf-8", errors="replace")
+                else:
+                    raw = str(manifest_path_or_yaml)
+            except Exception:
+                raw = str(manifest_path_or_yaml)
 
         try:
             docs = list(yaml.safe_load_all(raw)) if yaml else []
