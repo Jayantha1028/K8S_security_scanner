@@ -12,7 +12,10 @@ if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 
 import unittest
-from native_scanner import AttackGraphEngine
+try:
+    from native_scanner import AttackGraphEngine
+except ImportError:
+    from attack_graph import AttackGraphEngine
 
 
 class TestStandaloneAttackGraph(unittest.TestCase):

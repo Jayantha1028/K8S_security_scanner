@@ -16,7 +16,10 @@ import subprocess
 import tempfile
 import unittest
 
-from native_scanner import StandaloneBundleManager
+try:
+    from native_scanner import StandaloneBundleManager
+except ImportError:
+    from bundle import StandaloneBundleManager
 
 
 class TestStandaloneBundle(unittest.TestCase):

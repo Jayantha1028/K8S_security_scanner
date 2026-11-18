@@ -12,7 +12,10 @@ if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 
 import unittest
-from native_scanner import DeclarativeRuleEngine, DeclarativeRule
+try:
+    from native_scanner import DeclarativeRuleEngine, DeclarativeRule
+except ImportError:
+    from declarative import DeclarativeRuleEngine, DeclarativeRule
 
 
 class TestStandaloneDeclarative(unittest.TestCase):

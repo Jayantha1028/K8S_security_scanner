@@ -12,11 +12,18 @@ if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 
 import unittest
-from native_scanner import (
-    Finding,
-    ComplianceFrameworkMapper,
-    generate_markdown_certificate,
-)
+try:
+    from native_scanner import (
+        Finding,
+        ComplianceFrameworkMapper,
+        generate_markdown_certificate,
+    )
+except ImportError:
+    from scanner import Finding
+    from compliance import (
+        ComplianceFrameworkMapper,
+        generate_markdown_certificate,
+    )
 
 
 class TestStandaloneCompliance(unittest.TestCase):

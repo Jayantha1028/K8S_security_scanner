@@ -15,7 +15,10 @@ import unittest
 from io import BytesIO
 import json
 import tarfile
-from native_scanner import HybridContainerLayerScanner, SBOMScanReport, InstalledPackage
+try:
+    from native_scanner import HybridContainerLayerScanner, SBOMScanReport, InstalledPackage
+except ImportError:
+    from container import HybridContainerLayerScanner, SBOMScanReport, InstalledPackage
 
 
 class TestStandaloneContainerScanner(unittest.TestCase):

@@ -13,7 +13,10 @@ if str(_PKG_DIR) not in sys.path:
 
 import unittest
 import yaml
-from native_scanner import auto_remediate_manifest
+try:
+    from native_scanner import auto_remediate_manifest
+except ImportError:
+    from remediate import auto_remediate_manifest
 
 
 class TestStandaloneRemediation(unittest.TestCase):

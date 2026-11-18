@@ -12,12 +12,20 @@ if str(_PKG_DIR) not in sys.path:
     sys.path.insert(0, str(_PKG_DIR))
 
 import unittest
-from native_scanner import (
-    NativeSecurityScanner,
-    TAXONOMY_56,
-    shannon_entropy,
-    check_image_typosquatting,
-)
+try:
+    from native_scanner import (
+        NativeSecurityScanner,
+        TAXONOMY_56,
+        shannon_entropy,
+        check_image_typosquatting,
+    )
+except ImportError:
+    from scanner import (
+        NativeSecurityScanner,
+        TAXONOMY_56,
+        shannon_entropy,
+        check_image_typosquatting,
+    )
 
 
 class TestStandaloneScanner(unittest.TestCase):
