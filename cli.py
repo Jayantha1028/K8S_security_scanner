@@ -42,6 +42,7 @@ try:
     from .agent import SecurityAgent, LLMClient
     from .mcp_server import run_mcp_server
     from .vex import ContextualVEXEngine, export_vex_report
+    from .repl import start_copilot_repl, InteractiveCopilotREPL
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -64,6 +65,7 @@ except ImportError:
     from agent import SecurityAgent, LLMClient
     from mcp_server import run_mcp_server
     from vex import ContextualVEXEngine, export_vex_report
+    from repl import start_copilot_repl, InteractiveCopilotREPL
 
 
 def print_banner():
@@ -607,6 +609,14 @@ def cmd_agent(args):
     )
     agent = SecurityAgent(llm_client=llm)
 
+    if getattr(args, "interactive", False) or getattr(args, "prompt", None) == "chat":
+        start_copilot_repl(
+            target=getattr(args, "target", "."),
+            provider=getattr(args, "provider", "auto") or "auto",
+            model=getattr(args, "model", None),
+        )
+        return 0
+
     if getattr(args, "watch", False):
         agent.watch_cluster(
             namespace=getattr(args, "namespace", None),
@@ -652,6 +662,15 @@ def cmd_vex(args):
     else:
         print(engine.format_terminal_summary(doc))
 
+    return 0
+
+
+def cmd_chat(args):
+    start_copilot_repl(
+        target=getattr(args, "target", "."),
+        provider=getattr(args, "provider", "auto") or "auto",
+        model=getattr(args, "model", None),
+    )
     return 0
 
 
@@ -791,6 +810,7 @@ def main():
     p_agt = subparsers.add_parser("agent", help="Autonomous Kubernetes Security AI Agent (ReAct reasoning & In-Cluster Watch)")
     p_agt.add_argument("target", nargs="?", default=".", help="Target manifest path or directory (default: current dir)")
     p_agt.add_argument("-p", "--prompt", help="Natural language security question or task description")
+    p_agt.add_argument("-i", "--interactive", action="store_true", help="Start interactive multi-turn REPL copilot session")
     p_agt.add_argument("--provider", choices=["auto", "gemini", "openai", "anthropic", "ollama", "local"], default="auto", help="LLM Provider")
     p_agt.add_argument("--model", help="LLM model name (e.g. gemini-1.5-flash, gpt-4o, llama3.2)")
     p_agt.add_argument("--api-key", help="API key for LLM provider (or pass via env vars)")
@@ -800,6 +820,12 @@ def main():
     p_agt.add_argument("-n", "--namespace", help="Namespace for in-cluster watch daemon")
     p_agt.add_argument("--interval", type=int, default=60, help="Interval seconds between cluster audit cycles")
     p_agt.add_argument("--alert-webhook", help="Webhook URL to POST high-priority drift alerts (Slack/PagerDuty)")
+
+    # chat
+    p_chat = subparsers.add_parser("chat", help="Start Interactive Multi-Turn AI Copilot REPL session")
+    p_chat.add_argument("target", nargs="?", default=".", help="Target manifest path or directory (default: current dir)")
+    p_chat.add_argument("--provider", choices=["auto", "gemini", "openai", "anthropic", "ollama", "local"], default="auto", help="LLM Provider")
+    p_chat.add_argument("--model", help="LLM model name")
 
     # mcp
     p_mcp = subparsers.add_parser("mcp", help="Run standard Model Context Protocol (MCP) JSON-RPC 2.0 server over stdio")
@@ -857,6 +883,8 @@ def main():
         sys.exit(cmd_mcp(args))
     elif args.command == "vex":
         sys.exit(cmd_vex(args))
+    elif args.command == "chat":
+        sys.exit(cmd_chat(args))
 
 
 if __name__ == "__main__":

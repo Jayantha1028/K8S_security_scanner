@@ -446,21 +446,39 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
         except Exception as e:
             return f"Error executing tool {tool_name}: {str(e)}"
 
-    def reason_and_act(self, prompt: str, target: Optional[str] = None, max_steps: int = 5) -> Dict[str, Any]:
+    def reason_and_act(
+        self,
+        prompt: str,
+        target: Optional[str] = None,
+        max_steps: int = 5,
+        history: Optional[List[Dict[str, str]]] = None,
+    ) -> Dict[str, Any]:
         """
         Runs an autonomous ReAct loop to analyze, triage, and solve security requests.
+        Supports multi-turn conversational history.
         """
         full_user_prompt = prompt
         if target:
             full_user_prompt += f"\nTarget Resource / Path: {target}"
 
         trajectory: List[Dict[str, str]] = []
-        current_context = f"User Request: {full_user_prompt}"
+
+        context_blocks = []
+        if history:
+            context_blocks.append("CONVERSATION HISTORY:")
+            for turn in history[-6:]:  # Retain last 6 dialogue turns
+                role = turn.get("role", "User").upper()
+                content = turn.get("content", "").strip()
+                context_blocks.append(f"[{role}]: {content}")
+            context_blocks.append("--- CURRENT USER QUERY ---")
+
+        context_blocks.append(f"User Request: {full_user_prompt}")
+        current_context = "\n".join(context_blocks)
 
         for step in range(max_steps):
             # Check if using local heuristic engine
             if self.llm.provider == "local" or (self.llm.provider != "ollama" and not self.llm.api_key):
-                return self._run_deterministic_agent(prompt, target)
+                return self._run_deterministic_agent(prompt, target, history=history)
 
             response = self.llm.generate(self.SYSTEM_PROMPT, current_context)
 
@@ -494,7 +512,12 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             "trajectory": trajectory,
         }
 
-    def _run_deterministic_agent(self, prompt: str, target: Optional[str]) -> Dict[str, Any]:
+    def _run_deterministic_agent(
+        self,
+        prompt: str,
+        target: Optional[str],
+        history: Optional[List[Dict[str, str]]] = None,
+    ) -> Dict[str, Any]:
         """High-precision offline deterministic security agent without external API dependencies."""
         actions_taken = []
         summary_blocks = []
