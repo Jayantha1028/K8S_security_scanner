@@ -87,6 +87,7 @@ try:
     from .exporter import PrometheusMetricsExporter
     from .agent import SecurityAgent, LLMClient
     from .mcp_server import MCPServer
+    from .vex import ContextualVEXEngine, VEXDocument, VEXStatement, export_vex_report
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -148,6 +149,7 @@ except ImportError:
     from exporter import PrometheusMetricsExporter
     from agent import SecurityAgent, LLMClient
     from mcp_server import MCPServer
+    from vex import ContextualVEXEngine, VEXDocument, VEXStatement, export_vex_report
 
 KillChain = KillChainPath
 
@@ -212,4 +214,8 @@ __all__ = [
     "SecurityAgent",
     "LLMClient",
     "MCPServer",
+    "ContextualVEXEngine",
+    "VEXDocument",
+    "VEXStatement",
+    "export_vex_report",
 ]

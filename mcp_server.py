@@ -126,6 +126,24 @@ class MCPServer:
                     "required": ["query"],
                 },
             },
+            {
+                "name": "k8s_generate_openvex",
+                "description": "Correlates container CVEs with Kubernetes runtime defenses (readOnlyRootFilesystem, non-root, NetworkPolicy) and generates CISA OpenVEX v0.2.0 advisory.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "target": {
+                            "type": "string",
+                            "description": "Path to target manifest file or directory.",
+                        },
+                        "image": {
+                            "type": "string",
+                            "description": "Optional container image name to override.",
+                        },
+                    },
+                    "required": ["target"],
+                },
+            },
         ]
 
     def get_resource_definitions(self) -> List[Dict[str, Any]]:
@@ -210,6 +228,8 @@ class MCPServer:
                     res = self.agent.tool_explain_vulnerability(args.get("vuln_id", ""))
                 elif tool_name == "k8s_query_cve":
                     res = self.agent.tool_query_cve(args.get("query", ""))
+                elif tool_name == "k8s_generate_openvex":
+                    res = self.agent.tool_generate_openvex(args.get("target", "."), image=args.get("image", ""))
                 else:
                     return {
                         "jsonrpc": "2.0",

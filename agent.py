@@ -33,6 +33,7 @@ try:
     from .taxonomy import TAXONOMY_56
     from .cve import CVEDatabaseEngine
     from .compliance import ComplianceFrameworkMapper
+    from .vex import ContextualVEXEngine
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport, Finding
     from attack_graph import AttackGraphEngine
@@ -42,6 +43,7 @@ except ImportError:
     from taxonomy import TAXONOMY_56
     from cve import CVEDatabaseEngine
     from compliance import ComplianceFrameworkMapper
+    from vex import ContextualVEXEngine
 
 VULNERABILITY_TAXONOMY = TAXONOMY_56
 
@@ -216,6 +218,7 @@ Available Tools:
 - generate_gitops_fix(target: str, threshold: float = 70.0): Generates Kustomize strategic merge patches and PR body.
 - verify_patch_dry_run(target: str): Verifies that applying remediations fixes the findings without syntax breakage.
 - query_cve(package_or_cve: str): Checks embedded CVE vulnerability intelligence database.
+- generate_openvex(target: str, image: str = ""): Correlates container CVEs with runtime defenses to filter non-exploitable noise into OpenVEX v0.2.0.
 
 To execute a tool, write:
 Action: <tool_name>(<json_args>)
@@ -230,6 +233,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
         self.cluster_scanner = LiveClusterScanner()
         self.remediator = GitOpsRemediator()
         self.cve_db = CVEDatabaseEngine()
+        self.vex_engine = ContextualVEXEngine()
 
         self.tools: Dict[str, Callable[..., Any]] = {
             "scan_manifest": self.tool_scan_manifest,
@@ -239,6 +243,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             "generate_gitops_fix": self.tool_generate_gitops_fix,
             "verify_patch_dry_run": self.tool_verify_patch_dry_run,
             "query_cve": self.tool_query_cve,
+            "generate_openvex": self.tool_generate_openvex,
         }
 
     # ==================== Tool Implementations ====================
@@ -396,6 +401,23 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
     def tool_query_cve(self, package_or_cve: str) -> str:
         results = self.cve_db.query_package_cves(package_or_cve)
         return json.dumps(results[:10] if results else {"message": f"No records for {package_or_cve}"})
+
+    def tool_generate_openvex(self, target: str, image: str = "") -> str:
+        p = Path(target)
+        if not p.exists():
+            return f"Error: Target '{target}' not found."
+        doc = self.vex_engine.generate_vex_for_manifest(str(p), image_name=image or None)
+        return json.dumps(
+            {
+                "workload": doc.workload,
+                "total_cves": doc.total_cves,
+                "exploitable_cves": doc.exploitable_cves,
+                "mitigated_cves": doc.mitigated_cves,
+                "noise_reduction_pct": f"{doc.noise_reduction_ratio:.1f}%",
+                "sample_statements": [s.to_openvex_dict() for s in doc.statements[:5]],
+            },
+            indent=2,
+        )
 
     # ==================== ReAct Execution Loop ====================
 

@@ -41,6 +41,7 @@ try:
     from .exporter import PrometheusMetricsExporter
     from .agent import SecurityAgent, LLMClient
     from .mcp_server import run_mcp_server
+    from .vex import ContextualVEXEngine, export_vex_report
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -62,6 +63,7 @@ except ImportError:
     from exporter import PrometheusMetricsExporter
     from agent import SecurityAgent, LLMClient
     from mcp_server import run_mcp_server
+    from vex import ContextualVEXEngine, export_vex_report
 
 
 def print_banner():
@@ -632,6 +634,27 @@ def cmd_mcp(args):
     return 0
 
 
+def cmd_vex(args):
+    engine = ContextualVEXEngine()
+    target = Path(args.target)
+    if not target.exists():
+        print(f"Error: Target '{target}' not found.", file=sys.stderr)
+        return 1
+
+    doc = engine.generate_vex_for_manifest(str(target), image_name=getattr(args, "image", None))
+
+    if args.output:
+        Path(args.output).write_text(doc.to_openvex_json(), encoding="utf-8")
+        print(f"[✓] OpenVEX v0.2.0 document exported to: {args.output}")
+
+    if getattr(args, "json", False):
+        print(doc.to_openvex_json())
+    else:
+        print(engine.format_terminal_summary(doc))
+
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -781,6 +804,13 @@ def main():
     # mcp
     p_mcp = subparsers.add_parser("mcp", help="Run standard Model Context Protocol (MCP) JSON-RPC 2.0 server over stdio")
 
+    # vex
+    p_vex = subparsers.add_parser("vex", help="Generate CISA OpenVEX v0.2.0 contextual exploitability report (correlate CVEs with runtime defenses)")
+    p_vex.add_argument("target", help="Kubernetes manifest YAML to evaluate")
+    p_vex.add_argument("--image", help="Override container image name for CVE lookup")
+    p_vex.add_argument("-o", "--output", help="Save OpenVEX v0.2.0 JSON report to file")
+    p_vex.add_argument("--json", action="store_true", help="Output raw OpenVEX JSON instead of terminal summary")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -825,7 +855,8 @@ def main():
         sys.exit(cmd_agent(args))
     elif args.command == "mcp":
         sys.exit(cmd_mcp(args))
-        sys.exit(cmd_export_metrics(args))
+    elif args.command == "vex":
+        sys.exit(cmd_vex(args))
 
 
 if __name__ == "__main__":
