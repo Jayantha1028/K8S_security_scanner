@@ -46,6 +46,7 @@ try:
     from .sigstore import SigstoreVerifier
     from .simulation import ThreatSimulationEngine
     from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
+    from .lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -72,6 +73,7 @@ except ImportError:
     from sigstore import SigstoreVerifier
     from simulation import ThreatSimulationEngine
     from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
+    from lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport
 
 
 def print_banner():
@@ -754,6 +756,36 @@ def cmd_kubecam(args):
     return 0
 
 
+def cmd_lifecycle(args):
+    orchestrator = ContainerLifecycleOrchestrator()
+    target = Path(args.target)
+    if not target.exists():
+        print(f"Error: Target '{target}' not found.", file=sys.stderr)
+        return 1
+
+    rep = orchestrator.audit_lifecycle(
+        manifest_path=str(target),
+        dockerfile_path=getattr(args, "dockerfile", None),
+        image_ref=getattr(args, "image", None),
+        min_passing_score=getattr(args, "min_score", 75.0) or 75.0,
+    )
+
+    if getattr(args, "output", None):
+        Path(args.output).write_text(json.dumps(rep.to_dict(), indent=2), encoding="utf-8")
+        print(f"[✓] Container Lifecycle Audit report saved to: {args.output}")
+
+    if getattr(args, "json", False):
+        print(json.dumps(rep.to_dict(), indent=2))
+    else:
+        print(orchestrator.format_terminal_summary(rep))
+
+    if getattr(args, "ci_check", False) and rep.gate_verdict == "FAILED":
+        print("\n[!] CI Check FAILED: Container workload failed lifecycle security gate.", file=sys.stderr)
+        return 1
+
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -936,6 +968,16 @@ def main():
     p_kcam.add_argument("-o", "--output", help="Save snapshot or filmstrip to JSON file")
     p_kcam.add_argument("--json", action="store_true", help="Output raw JSON results")
 
+    # lifecycle
+    p_life = subparsers.add_parser("lifecycle", help="End-to-End Container Security Lifecycle Audit (Build -> Ship -> Deploy -> Run -> Post-Run)")
+    p_life.add_argument("target", help="Kubernetes manifest YAML to audit across all 5 lifecycle phases")
+    p_life.add_argument("--dockerfile", help="Path to associated Dockerfile (for Phase 1: Build IaC audit)")
+    p_life.add_argument("--image", help="Container image reference (override for Phase 2: Supply Chain audit)")
+    p_life.add_argument("--min-score", type=float, default=75.0, help="Minimum lifecycle compound score threshold (default: 75.0)")
+    p_life.add_argument("--ci-check", action="store_true", help="Exit with code 1 if workload fails lifecycle security gate")
+    p_life.add_argument("-o", "--output", help="Save lifecycle report to JSON file")
+    p_life.add_argument("--json", action="store_true", help="Output raw JSON lifecycle report")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -990,6 +1032,8 @@ def main():
         sys.exit(cmd_verify_image(args))
     elif args.command == "kubecam":
         sys.exit(cmd_kubecam(args))
+    elif args.command == "lifecycle":
+        sys.exit(cmd_lifecycle(args))
 
 
 if __name__ == "__main__":

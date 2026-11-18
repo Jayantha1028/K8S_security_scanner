@@ -92,6 +92,7 @@ try:
     from .sigstore import SigstoreVerifier, SignatureVerificationResult
     from .simulation import ThreatSimulationEngine, SimulationReport
     from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
+    from .lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport, PhaseResult
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -158,6 +159,7 @@ except ImportError:
     from sigstore import SigstoreVerifier, SignatureVerificationResult
     from simulation import ThreatSimulationEngine, SimulationReport
     from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
+    from lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport, PhaseResult
 
 KillChain = KillChainPath
 
@@ -236,4 +238,7 @@ __all__ = [
     "KubeCamFrame",
     "KubeCamFilmstrip",
     "SecurityDriftDelta",
+    "ContainerLifecycleOrchestrator",
+    "ContainerLifecycleReport",
+    "PhaseResult",
 ]

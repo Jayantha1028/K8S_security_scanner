@@ -37,6 +37,7 @@ try:
     from .sigstore import SigstoreVerifier
     from .simulation import ThreatSimulationEngine
     from .kubecam import KubeCamEngine
+    from .lifecycle import ContainerLifecycleOrchestrator
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport, Finding
     from attack_graph import AttackGraphEngine
@@ -50,6 +51,7 @@ except ImportError:
     from sigstore import SigstoreVerifier
     from simulation import ThreatSimulationEngine
     from kubecam import KubeCamEngine
+    from lifecycle import ContainerLifecycleOrchestrator
 
 VULNERABILITY_TAXONOMY = TAXONOMY_56
 
@@ -228,6 +230,7 @@ Available Tools:
 - simulate_attack(target: str): Simulates realistic multi-stage adversary intrusion (initial access -> container breakout -> IAM theft -> cluster takeover).
 - verify_image_signature(image_ref: str): Checks Cosign cryptographic signature, immutable digest, and SLSA provenance.
 - kubecam_snapshot(namespace: str = ""): Takes instantaneous KubeCam cluster security camera snapshot & posture fingerprint.
+- audit_lifecycle(manifest: str, dockerfile: str = "", image: str = ""): Audits complete 5-phase container security lifecycle (Build -> Ship -> Deploy -> Run -> Post-Run).
 
 To execute a tool, write:
 Action: <tool_name>(<json_args>)
@@ -246,6 +249,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
         self.sigstore = SigstoreVerifier()
         self.simulator = ThreatSimulationEngine()
         self.kubecam = KubeCamEngine()
+        self.lifecycle = ContainerLifecycleOrchestrator()
 
         self.tools: Dict[str, Callable[..., Any]] = {
             "scan_manifest": self.tool_scan_manifest,
@@ -259,6 +263,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             "simulate_attack": self.tool_simulate_attack_scenario,
             "verify_image_signature": self.tool_verify_image_signature,
             "kubecam_snapshot": self.tool_kubecam_snapshot,
+            "audit_lifecycle": self.tool_audit_container_lifecycle,
         }
 
     # ==================== Tool Implementations ====================
@@ -448,6 +453,17 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
     def tool_kubecam_snapshot(self, namespace: str = "") -> str:
         frame = self.kubecam.capture_frame(namespace=namespace or None)
         return json.dumps(frame.to_dict(), indent=2)
+
+    def tool_audit_container_lifecycle(self, manifest: str, dockerfile: str = "", image: str = "") -> str:
+        p = Path(manifest)
+        if not p.exists():
+            return f"Error: Manifest '{manifest}' not found."
+        rep = self.lifecycle.audit_lifecycle(
+            manifest_path=str(p),
+            dockerfile_path=dockerfile or None,
+            image_ref=image or None,
+        )
+        return json.dumps(rep.to_dict(), indent=2)
 
     # ==================== ReAct Execution Loop ====================
 

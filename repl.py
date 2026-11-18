@@ -28,12 +28,14 @@ try:
     from .vex import ContextualVEXEngine
     from .gitops import GitOpsRemediator
     from .cluster_scanner import LiveClusterScanner
+    from .lifecycle import ContainerLifecycleOrchestrator
 except ImportError:
     from agent import SecurityAgent, LLMClient
     from scanner import NativeSecurityScanner
     from vex import ContextualVEXEngine
     from gitops import GitOpsRemediator
     from cluster_scanner import LiveClusterScanner
+    from lifecycle import ContainerLifecycleOrchestrator
 
 HISTORY_FILE = os.path.expanduser("~/.k8s_security_agent_history")
 
@@ -71,6 +73,7 @@ SLASH_COMMANDS = [
     "/fix",
     "/apply",
     "/cluster",
+    "/lifecycle",
     "/history",
     "/clear",
     "/exit",
@@ -279,6 +282,19 @@ Available Copilot Commands:
                 f"    - Total Findings    : {len(rep.findings)}\n"
                 f"    - Status            : {'Compliant' if rep.success else 'Drift Detected'}"
             )
+
+        elif cmd == "/lifecycle":
+            p = Path(self.target)
+            if not p.exists():
+                return f"Error: Target '{self.target}' not found."
+            print(Ansi.color(f"[*] Auditing 5-phase container lifecycle for '{self.target}'...", Ansi.DIM))
+            orch = ContainerLifecycleOrchestrator()
+            rep = orch.audit_lifecycle(str(p))
+            self.conversation_history.append({
+                "role": "system",
+                "content": f"User executed /lifecycle. Score: {rep.overall_lifecycle_score:.1f}/100, Verdict: {rep.gate_verdict}.",
+            })
+            return orch.format_terminal_summary(rep)
 
         elif cmd == "/history":
             if not self.conversation_history:
