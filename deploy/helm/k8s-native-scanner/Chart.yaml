@@ -1,0 +1,15 @@
+apiVersion: v2
+name: k8s-native-scanner
+description: Enterprise Pure-Python Kubernetes CNAPP, Admission Webhook, Attack DAG & AI Agent
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - security
+  - cnapp
+  - ai-agent
+  - admission-controller
+  - attack-graph
+maintainers:
+  - name: DevSecOps Team

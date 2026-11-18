@@ -43,6 +43,8 @@ try:
     from .mcp_server import run_mcp_server
     from .vex import ContextualVEXEngine, export_vex_report
     from .repl import start_copilot_repl, InteractiveCopilotREPL
+    from .sigstore import SigstoreVerifier
+    from .simulation import ThreatSimulationEngine
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -66,6 +68,8 @@ except ImportError:
     from mcp_server import run_mcp_server
     from vex import ContextualVEXEngine, export_vex_report
     from repl import start_copilot_repl, InteractiveCopilotREPL
+    from sigstore import SigstoreVerifier
+    from simulation import ThreatSimulationEngine
 
 
 def print_banner():
@@ -674,6 +678,32 @@ def cmd_chat(args):
     return 0
 
 
+def cmd_simulate(args):
+    engine = ThreatSimulationEngine()
+    rep = engine.simulate_attack_scenario(args.target)
+    if getattr(args, "json", False):
+        print(json.dumps(rep.to_dict(), indent=2))
+    else:
+        print(engine.format_simulation_table(rep))
+    return 0
+
+
+def cmd_verify_image(args):
+    verifier = SigstoreVerifier()
+    res = verifier.verify_workload_image_signature(args.image)
+    if getattr(args, "json", False):
+        print(json.dumps(res.to_dict(), indent=2))
+    else:
+        status_str = "[✓] VERIFIED" if res.verified else "[!] UNVERIFIED"
+        print(f"\n{status_str} Container Image: {res.image}")
+        print(f"  Digest           : {res.digest or 'None'}")
+        print(f"  Signer Identity  : {res.signer_identity or 'None'}")
+        print(f"  SLSA Provenance  : {'Present (Level 3)' if res.has_slsa_provenance else 'Missing'}")
+        if res.error_message:
+            print(f"  Verification Note: {res.error_message}")
+    return 0 if res.verified else 1
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -837,6 +867,16 @@ def main():
     p_vex.add_argument("-o", "--output", help="Save OpenVEX v0.2.0 JSON report to file")
     p_vex.add_argument("--json", action="store_true", help="Output raw OpenVEX JSON instead of terminal summary")
 
+    # simulate
+    p_sim = subparsers.add_parser("simulate", help="Adversarial Threat Modeling & Multi-Stage Kill Chain Simulation")
+    p_sim.add_argument("target", help="Kubernetes manifest YAML or directory to simulate attacks against")
+    p_sim.add_argument("--json", action="store_true", help="Output raw simulation JSON report")
+
+    # verify-image
+    p_vimg = subparsers.add_parser("verify-image", help="Verify Cosign/Sigstore cryptographic signature and SLSA provenance")
+    p_vimg.add_argument("image", help="Container image reference (e.g. repo/image@sha256:...)")
+    p_vimg.add_argument("--json", action="store_true", help="Output raw verification JSON")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -885,6 +925,10 @@ def main():
         sys.exit(cmd_vex(args))
     elif args.command == "chat":
         sys.exit(cmd_chat(args))
+    elif args.command == "simulate":
+        sys.exit(cmd_simulate(args))
+    elif args.command == "verify-image":
+        sys.exit(cmd_verify_image(args))
 
 
 if __name__ == "__main__":

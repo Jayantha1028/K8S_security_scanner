@@ -1,0 +1,53 @@
+{{- if .Values.rbac.create -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.rbac.serviceAccountName }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.rbac.serviceAccountName }}-role
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+rules:
+  # Read-only cluster posture auditing
+  - apiGroups: ["", "apps", "batch", "networking.k8s.io", "rbac.authorization.k8s.io"]
+    resources:
+      - pods
+      - namespaces
+      - services
+      - endpoints
+      - deployments
+      - daemonsets
+      - statefulsets
+      - jobs
+      - cronjobs
+      - networkpolicies
+      - ingresses
+      - roles
+      - rolebindings
+      - clusterroles
+      - clusterrolebindings
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.rbac.serviceAccountName }}-binding
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.rbac.serviceAccountName }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.rbac.serviceAccountName }}-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}

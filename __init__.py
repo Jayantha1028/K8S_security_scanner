@@ -89,6 +89,8 @@ try:
     from .mcp_server import MCPServer
     from .vex import ContextualVEXEngine, VEXDocument, VEXStatement, export_vex_report
     from .repl import InteractiveCopilotREPL, start_copilot_repl
+    from .sigstore import SigstoreVerifier, SignatureVerificationResult
+    from .simulation import ThreatSimulationEngine, SimulationReport
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -152,6 +154,8 @@ except ImportError:
     from mcp_server import MCPServer
     from vex import ContextualVEXEngine, VEXDocument, VEXStatement, export_vex_report
     from repl import InteractiveCopilotREPL, start_copilot_repl
+    from sigstore import SigstoreVerifier, SignatureVerificationResult
+    from simulation import ThreatSimulationEngine, SimulationReport
 
 KillChain = KillChainPath
 
@@ -222,4 +226,8 @@ __all__ = [
     "export_vex_report",
     "InteractiveCopilotREPL",
     "start_copilot_repl",
+    "SigstoreVerifier",
+    "SignatureVerificationResult",
+    "ThreatSimulationEngine",
+    "SimulationReport",
 ]

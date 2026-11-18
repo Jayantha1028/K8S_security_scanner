@@ -1,0 +1,56 @@
+# Default values for k8s-native-scanner Helm Chart
+
+image:
+  repository: ghcr.io/kubernetes-native-security/k8s-native-scanner
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+replicaCount: 1
+
+agent:
+  enabled: true
+  interval: 60
+  provider: "auto"  # auto, gemini, openai, anthropic, ollama, local
+  model: ""
+  apiKeySecret: ""  # Secret name containing GEMINI_API_KEY or OPENAI_API_KEY
+  alertWebhook: ""  # Slack or PagerDuty incoming webhook URL
+  resources:
+    limits:
+      cpu: 250m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+
+webhook:
+  enabled: true
+  port: 8443
+  mode: "warn"  # enforce, warn, shadow
+  minScore: 70.0
+  replicas: 2
+  service:
+    type: ClusterIP
+    port: 443
+    targetPort: 8443
+  resources:
+    limits:
+      cpu: 200m
+      memory: 64Mi
+    requests:
+      cpu: 20m
+      memory: 16Mi
+
+metrics:
+  enabled: true
+  port: 9108
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+
+rbac:
+  create: true
+  serviceAccountName: k8s-native-scanner-sa
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

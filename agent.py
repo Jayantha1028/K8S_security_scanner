@@ -34,6 +34,8 @@ try:
     from .cve import CVEDatabaseEngine
     from .compliance import ComplianceFrameworkMapper
     from .vex import ContextualVEXEngine
+    from .sigstore import SigstoreVerifier
+    from .simulation import ThreatSimulationEngine
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport, Finding
     from attack_graph import AttackGraphEngine
@@ -44,6 +46,8 @@ except ImportError:
     from cve import CVEDatabaseEngine
     from compliance import ComplianceFrameworkMapper
     from vex import ContextualVEXEngine
+    from sigstore import SigstoreVerifier
+    from simulation import ThreatSimulationEngine
 
 VULNERABILITY_TAXONOMY = TAXONOMY_56
 
@@ -219,6 +223,8 @@ Available Tools:
 - verify_patch_dry_run(target: str): Verifies that applying remediations fixes the findings without syntax breakage.
 - query_cve(package_or_cve: str): Checks embedded CVE vulnerability intelligence database.
 - generate_openvex(target: str, image: str = ""): Correlates container CVEs with runtime defenses to filter non-exploitable noise into OpenVEX v0.2.0.
+- simulate_attack(target: str): Simulates realistic multi-stage adversary intrusion (initial access -> container breakout -> IAM theft -> cluster takeover).
+- verify_image_signature(image_ref: str): Checks Cosign cryptographic signature, immutable digest, and SLSA provenance.
 
 To execute a tool, write:
 Action: <tool_name>(<json_args>)
@@ -234,6 +240,8 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
         self.remediator = GitOpsRemediator()
         self.cve_db = CVEDatabaseEngine()
         self.vex_engine = ContextualVEXEngine()
+        self.sigstore = SigstoreVerifier()
+        self.simulator = ThreatSimulationEngine()
 
         self.tools: Dict[str, Callable[..., Any]] = {
             "scan_manifest": self.tool_scan_manifest,
@@ -244,6 +252,8 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             "verify_patch_dry_run": self.tool_verify_patch_dry_run,
             "query_cve": self.tool_query_cve,
             "generate_openvex": self.tool_generate_openvex,
+            "simulate_attack": self.tool_simulate_attack_scenario,
+            "verify_image_signature": self.tool_verify_image_signature,
         }
 
     # ==================== Tool Implementations ====================
@@ -418,6 +428,17 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             },
             indent=2,
         )
+
+    def tool_simulate_attack_scenario(self, target: str) -> str:
+        p = Path(target)
+        if not p.exists():
+            return f"Error: Target '{target}' not found."
+        rep = self.simulator.simulate_attack_scenario(str(p))
+        return json.dumps(rep.to_dict(), indent=2)
+
+    def tool_verify_image_signature(self, image_ref: str) -> str:
+        res = self.sigstore.verify_workload_image_signature(image_ref)
+        return json.dumps(res.to_dict(), indent=2)
 
     # ==================== ReAct Execution Loop ====================
 

@@ -1,0 +1,91 @@
+# Turnkey Production Manifest for Kubernetes Native Security Scanner & AI Agent
+# Apply with: kubectl apply -f deploy/k8s/turnkey-operator.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-security
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-security-agent-sa
+  namespace: k8s-security
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-security-agent-role
+rules:
+  - apiGroups: ["", "apps", "batch", "networking.k8s.io", "rbac.authorization.k8s.io"]
+    resources:
+      - pods
+      - namespaces
+      - services
+      - deployments
+      - daemonsets
+      - statefulsets
+      - jobs
+      - cronjobs
+      - networkpolicies
+      - ingresses
+      - roles
+      - rolebindings
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-security-agent-binding
+subjects:
+  - kind: ServiceAccount
+    name: k8s-security-agent-sa
+    namespace: k8s-security
+roleRef:
+  kind: ClusterRole
+  name: k8s-security-agent-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-security-agent
+  namespace: k8s-security
+  labels:
+    app.kubernetes.io/name: k8s-security-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k8s-security-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k8s-security-agent
+    spec:
+      serviceAccountName: k8s-security-agent-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: agent
+          image: ghcr.io/kubernetes-native-security/k8s-native-scanner:1.0.0
+          imagePullPolicy: IfNotPresent
+          command: ["python3", "/app/cli.py", "agent"]
+          args: ["--watch", "--interval", "60"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            limits:
+              cpu: 250m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 32Mi
