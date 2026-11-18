@@ -139,6 +139,14 @@ class VEXDocument:
         }
         return json.dumps(doc, indent=indent)
 
+    def to_dict(self) -> Dict[str, Any]:
+        d = json.loads(self.to_openvex_json())
+        d["total_cves"] = self.total_cves
+        d["exploitable_cves"] = self.exploitable_cves
+        d["mitigated_cves"] = self.mitigated_cves
+        d["noise_reduction_ratio"] = self.noise_reduction_ratio
+        return d
+
 
 class ContextualVEXEngine:
     """
