@@ -65,6 +65,7 @@ spec:
       labels:
         app.kubernetes.io/name: k8s-security-agent
     spec:
+      automountServiceAccountToken: false
       serviceAccountName: k8s-security-agent-sa
       securityContext:
         runAsNonRoot: true

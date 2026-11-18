@@ -18,12 +18,15 @@ spec:
         app.kubernetes.io/name: {{ .Chart.Name }}
         app.kubernetes.io/component: ai-agent
     spec:
+      automountServiceAccountToken: false
       serviceAccountName: {{ .Values.rbac.serviceAccountName }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001
         runAsGroup: 10001
         fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: agent
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -43,6 +46,14 @@ spec:
             capabilities:
               drop:
                 - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - name: tmp-dir
+              mountPath: /tmp
           resources:
             {{- toYaml .Values.agent.resources | nindent 12 }}
+      volumes:
+        - name: tmp-dir
+          emptyDir: {}
 {{- end -}}
