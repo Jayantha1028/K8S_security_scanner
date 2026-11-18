@@ -36,6 +36,7 @@ try:
     from .vex import ContextualVEXEngine
     from .sigstore import SigstoreVerifier
     from .simulation import ThreatSimulationEngine
+    from .kubecam import KubeCamEngine
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport, Finding
     from attack_graph import AttackGraphEngine
@@ -48,6 +49,7 @@ except ImportError:
     from vex import ContextualVEXEngine
     from sigstore import SigstoreVerifier
     from simulation import ThreatSimulationEngine
+    from kubecam import KubeCamEngine
 
 VULNERABILITY_TAXONOMY = TAXONOMY_56
 
@@ -225,6 +227,7 @@ Available Tools:
 - generate_openvex(target: str, image: str = ""): Correlates container CVEs with runtime defenses to filter non-exploitable noise into OpenVEX v0.2.0.
 - simulate_attack(target: str): Simulates realistic multi-stage adversary intrusion (initial access -> container breakout -> IAM theft -> cluster takeover).
 - verify_image_signature(image_ref: str): Checks Cosign cryptographic signature, immutable digest, and SLSA provenance.
+- kubecam_snapshot(namespace: str = ""): Takes instantaneous KubeCam cluster security camera snapshot & posture fingerprint.
 
 To execute a tool, write:
 Action: <tool_name>(<json_args>)
@@ -242,6 +245,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
         self.vex_engine = ContextualVEXEngine()
         self.sigstore = SigstoreVerifier()
         self.simulator = ThreatSimulationEngine()
+        self.kubecam = KubeCamEngine()
 
         self.tools: Dict[str, Callable[..., Any]] = {
             "scan_manifest": self.tool_scan_manifest,
@@ -254,6 +258,7 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             "generate_openvex": self.tool_generate_openvex,
             "simulate_attack": self.tool_simulate_attack_scenario,
             "verify_image_signature": self.tool_verify_image_signature,
+            "kubecam_snapshot": self.tool_kubecam_snapshot,
         }
 
     # ==================== Tool Implementations ====================
@@ -439,6 +444,10 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
     def tool_verify_image_signature(self, image_ref: str) -> str:
         res = self.sigstore.verify_workload_image_signature(image_ref)
         return json.dumps(res.to_dict(), indent=2)
+
+    def tool_kubecam_snapshot(self, namespace: str = "") -> str:
+        frame = self.kubecam.capture_frame(namespace=namespace or None)
+        return json.dumps(frame.to_dict(), indent=2)
 
     # ==================== ReAct Execution Loop ====================
 

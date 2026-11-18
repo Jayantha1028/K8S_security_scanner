@@ -45,6 +45,7 @@ try:
     from .repl import start_copilot_repl, InteractiveCopilotREPL
     from .sigstore import SigstoreVerifier
     from .simulation import ThreatSimulationEngine
+    from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -70,6 +71,7 @@ except ImportError:
     from repl import start_copilot_repl, InteractiveCopilotREPL
     from sigstore import SigstoreVerifier
     from simulation import ThreatSimulationEngine
+    from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip
 
 
 def print_banner():
@@ -704,6 +706,54 @@ def cmd_verify_image(args):
     return 0 if res.verified else 1
 
 
+def cmd_kubecam(args):
+    engine = KubeCamEngine(kubeconfig=getattr(args, "kubeconfig", None))
+    action = getattr(args, "action", "snapshot") or "snapshot"
+
+    if action == "snapshot":
+        frame = engine.capture_frame(namespace=getattr(args, "namespace", None))
+        if getattr(args, "json", False):
+            print(json.dumps(frame.to_dict(), indent=2))
+        else:
+            print(f"\n[✓] KubeCam Security Snapshot #{frame.frame_id} Captured:")
+            print(f"    - Timestamp       : {frame.timestamp}")
+            print(f"    - Workloads Found : {frame.total_workloads}")
+            print(f"    - Compliance Score: {frame.cluster_compliance_score:.1f}%")
+            print(f"    - Blast Radius    : {frame.cluster_blast_radius:.1f}/100.0")
+            print(f"    - Frame Hash      : {frame.frame_hash}")
+        if getattr(args, "output", None):
+            Path(args.output).write_text(json.dumps(frame.to_dict(), indent=2), encoding="utf-8")
+            print(f"[✓] Snapshot saved to: {args.output}")
+
+    elif action == "record":
+        interval = getattr(args, "interval", 5) or 5
+        frames_count = getattr(args, "frames", 3) or 3
+        print(f"[*] Recording KubeCam filmstrip ({frames_count} frames, interval={interval}s)...")
+        filmstrip = engine.record_time_lapse(
+            interval_seconds=interval,
+            total_frames=frames_count,
+            namespace=getattr(args, "namespace", None),
+        )
+        if getattr(args, "json", False):
+            print(json.dumps(filmstrip.to_dict(), indent=2))
+        else:
+            print(engine.format_filmstrip_summary(filmstrip))
+        if getattr(args, "output", None):
+            Path(args.output).write_text(json.dumps(filmstrip.to_dict(), indent=2), encoding="utf-8")
+            print(f"[✓] Filmstrip saved to: {args.output}")
+
+    elif action == "kubescape":
+        frame = engine.capture_frame(namespace=getattr(args, "namespace", None))
+        data = engine.export_kubescape_format(frame)
+        if getattr(args, "output", None):
+            Path(args.output).write_text(json.dumps(data, indent=2), encoding="utf-8")
+            print(f"[✓] Kubescape-compliant ARMO report exported to: {args.output}")
+        else:
+            print(json.dumps(data, indent=2))
+
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="k8s-native-scan",
@@ -877,6 +927,15 @@ def main():
     p_vimg.add_argument("image", help="Container image reference (e.g. repo/image@sha256:...)")
     p_vimg.add_argument("--json", action="store_true", help="Output raw verification JSON")
 
+    # kubecam
+    p_kcam = subparsers.add_parser("kubecam", help="KubeCam: Cluster Continuous Assessment Monitor, Security Camera & Kubescape Bridge")
+    p_kcam.add_argument("action", nargs="?", default="snapshot", choices=["snapshot", "record", "kubescape"], help="Action: snapshot (default), record (time-lapse), or kubescape (export)")
+    p_kcam.add_argument("-n", "--namespace", help="Filter by specific Kubernetes namespace")
+    p_kcam.add_argument("--interval", type=int, default=5, help="Interval in seconds between time-lapse frames (for 'record')")
+    p_kcam.add_argument("--frames", type=int, default=3, help="Number of frames to record (for 'record')")
+    p_kcam.add_argument("-o", "--output", help="Save snapshot or filmstrip to JSON file")
+    p_kcam.add_argument("--json", action="store_true", help="Output raw JSON results")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -929,6 +988,8 @@ def main():
         sys.exit(cmd_simulate(args))
     elif args.command == "verify-image":
         sys.exit(cmd_verify_image(args))
+    elif args.command == "kubecam":
+        sys.exit(cmd_kubecam(args))
 
 
 if __name__ == "__main__":

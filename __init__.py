@@ -91,6 +91,7 @@ try:
     from .repl import InteractiveCopilotREPL, start_copilot_repl
     from .sigstore import SigstoreVerifier, SignatureVerificationResult
     from .simulation import ThreatSimulationEngine, SimulationReport
+    from .kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -156,6 +157,7 @@ except ImportError:
     from repl import InteractiveCopilotREPL, start_copilot_repl
     from sigstore import SigstoreVerifier, SignatureVerificationResult
     from simulation import ThreatSimulationEngine, SimulationReport
+    from kubecam import KubeCamEngine, KubeCamFrame, KubeCamFilmstrip, SecurityDriftDelta
 
 KillChain = KillChainPath
 
@@ -230,4 +232,8 @@ __all__ = [
     "SignatureVerificationResult",
     "ThreatSimulationEngine",
     "SimulationReport",
+    "KubeCamEngine",
+    "KubeCamFrame",
+    "KubeCamFilmstrip",
+    "SecurityDriftDelta",
 ]
