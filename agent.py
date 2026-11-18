@@ -684,6 +684,10 @@ Final Answer: <your structured summary, threat analysis, and actionable remediat
             ],
         }
         try:
+            parsed = urllib.parse.urlparse(webhook_url)
+            if parsed.scheme.lower() not in ("http", "https"):
+                logger.warning(f"Rejected unsafe webhook URL scheme: '{parsed.scheme}'")
+                return
             req = urllib.request.Request(
                 webhook_url,
                 data=json.dumps(payload).encode("utf-8"),

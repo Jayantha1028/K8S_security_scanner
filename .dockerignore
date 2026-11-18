@@ -1,0 +1,48 @@
+# Git metadata & harness
+.git
+.gitignore
+.gitattributes
+.github
+
+# Python caches and bytecode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.installed.cfg
+*.egg
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# Development IDE artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test artifacts, logs & caches
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+*.sqlite
+*.sarif
+*.xml
+*.mmd
+
+# Local secrets & temp files
+*.env
+*.pem
+*.key
+*.crt
+tmp/
+temp/

@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir --target=/build/pkgs -r requirements.txt
 
 WORKDIR /app
 COPY . /app
+RUN chmod -R 555 /app
 
 # Final Minimal Distroless Image
 FROM gcr.io/distroless/python3-debian12:nonroot
@@ -25,7 +26,9 @@ COPY --from=builder /build/pkgs /app/pkgs
 COPY --from=builder /app /app
 
 ENV PYTHONPATH="/app:/app/pkgs" \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    TMPDIR=/tmp
 
 # Non-root user 65532 built into distroless
 USER 65532:65532
