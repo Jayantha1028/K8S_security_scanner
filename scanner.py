@@ -289,7 +289,7 @@ class ScanReport:
                 from .compliance import ComplianceFrameworkMapper
             except ImportError:
                 try:
-                    from reporting.compliance_framework_mapper import ComplianceFrameworkMapper
+                    from compliance import ComplianceFrameworkMapper
                 except ImportError:
                     from compliance_framework_mapper import ComplianceFrameworkMapper
             return ComplianceFrameworkMapper.evaluate_findings(self.findings, target_name=self.manifest_path)

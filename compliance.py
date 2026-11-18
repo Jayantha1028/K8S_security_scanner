@@ -140,6 +140,37 @@ FRAMEWORK_DEFINITIONS: Dict[str, Dict[str, Any]] = {
                 "description": "Resource consumption limits and network policies isolate compromised containers."
             },
         }
+    },
+    "Well-Architected-Framework": {
+        "name": "Cloud-Native & Kubernetes Well-Architected Framework",
+        "description": "Cross-cloud architectural excellence across Security, Reliability, Performance, Operations, and Cost Optimization.",
+        "controls": {
+            "WAF-SEC-01": {
+                "name": "Security: Workload Isolation & Least Privilege",
+                "vuln_ids": ["V01", "V02", "V03", "V04", "V08", "V12", "V45"],
+                "description": "Containers enforce non-root execution, drop dangerous Linux capabilities, and disable rootfs writes."
+            },
+            "WAF-SEC-02": {
+                "name": "Security: Identity, RBAC & Secret Management",
+                "vuln_ids": ["V18", "V23", "V25", "V26", "V32", "V33", "V34"],
+                "description": "ServiceAccount tokens are not automounted unnecessarily, RBAC avoids wildcards, and credentials are protected."
+            },
+            "WAF-SEC-03": {
+                "name": "Security: Network Segmentation & Perimeter Defense",
+                "vuln_ids": ["V06", "V10", "V11", "V31"],
+                "description": "Traffic is constrained using default-deny NetworkPolicies, avoiding hostNetwork exposure."
+            },
+            "WAF-PERF-01": {
+                "name": "Performance & Cost: Resource Boundaries & Fair Share",
+                "vuln_ids": ["V13", "V14"],
+                "description": "Every container declares CPU/memory requests and limits to eliminate noisy neighbor effects and cluster starvation."
+            },
+            "WAF-OPS-01": {
+                "name": "Operational Excellence: Image Immutability & Supply Chain",
+                "vuln_ids": ["V15", "V16", "V17", "V19", "V21"],
+                "description": "Workloads reference immutable image digests, avoid floating tags (:latest), and enforce signature verification."
+            },
+        }
     }
 }
 
