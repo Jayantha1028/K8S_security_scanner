@@ -219,7 +219,7 @@ def check_image_typosquatting(image: str) -> Tuple[bool, Optional[str], int]:
         dist = levenshtein_distance(base_name, canonical)
         if dist == 0:
             return False, None, 0
-        if dist == 1 or (dist == 2 and len(canonical) >= 6 and len(base_name) >= 6):
+        if dist == 1 or (dist == 2 and len(canonical) >= 5 and len(base_name) >= 5):
             if dist < min_dist:
                 min_dist = dist
                 best_match = canonical
