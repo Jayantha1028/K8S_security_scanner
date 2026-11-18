@@ -57,6 +57,9 @@ try:
     from .remediate import auto_remediate_manifest
     from .vex import ContextualVEXEngine
     from .compliance import ComplianceFrameworkMapper
+    from .openapi import get_openapi_spec, get_swagger_ui_html
+    from .storage import EnterpriseStorageEngine, TelemetryQueryFilter
+    from .notifications import NotificationDispatcher, AlertPayload
 except ImportError:
     from auth import (
         EnterpriseAuthManager,
@@ -81,6 +84,9 @@ except ImportError:
     from remediate import auto_remediate_manifest
     from vex import ContextualVEXEngine
     from compliance import ComplianceFrameworkMapper
+    from openapi import get_openapi_spec, get_swagger_ui_html
+    from storage import EnterpriseStorageEngine, TelemetryQueryFilter
+    from notifications import NotificationDispatcher, AlertPayload
 
 logger = logging.getLogger("NativeScanner.EnterpriseServer")
 
@@ -247,6 +253,8 @@ class EnterpriseAPIHandler(BaseHTTPRequestHandler):
     siem_forwarder: SIEMForwarder
     scanner: NativeSecurityScanner
     vex_engine: ContextualVEXEngine
+    storage_engine: Optional[EnterpriseStorageEngine] = None
+    notification_dispatcher: Optional[NotificationDispatcher] = None
 
     def log_message(self, format: str, *args: Any):
         # Silence default stderr logging to keep tests and CLI clean
@@ -333,9 +341,26 @@ class EnterpriseAPIHandler(BaseHTTPRequestHandler):
             self._send_json(200, {"status": "HEALTHY", "version": "2.0.0"})
             return
 
-        # 2. Embedded Web Dashboard
+        # 2. Embedded Web Dashboard & Swagger UI Documentation
         if path in ("/", "/dashboard", "/console"):
             self._send_text(200, get_embedded_dashboard_html(), "text/html")
+            return
+
+        if path in ("/docs", "/swagger"):
+            self._send_text(200, get_swagger_ui_html(openapi_url="/api/v1/openapi.json"), "text/html")
+            return
+
+        # 2.1 OpenAPI 3.0.3 Specification
+        if path == "/api/v1/openapi.json":
+            self._send_json(200, get_openapi_spec())
+            return
+
+        # 2.2 Storage Engine Health & Stats
+        if path == "/api/v1/storage/stats":
+            if self.storage_engine:
+                self._send_json(200, self.storage_engine.get_stats())
+            else:
+                self._send_json(200, {"status": "uninitialized"})
             return
 
         # 3. Prometheus Metrics Exposition
@@ -541,9 +566,73 @@ class EnterpriseAPIHandler(BaseHTTPRequestHandler):
 
             if evt:
                 self.siem_forwarder.push(evt)
+                if self.storage_engine:
+                    self.storage_engine.save_telemetry_event(
+                        tenant_id=body.get("tenant_id", "default"),
+                        cluster_id=body.get("cluster_id", "default"),
+                        event_id=evt.event_id,
+                        event_type=evt.event_type,
+                        severity=evt.severity,
+                        pod_name=evt.pod_name,
+                        namespace=evt.namespace,
+                        comm=evt.comm,
+                        description=evt.description,
+                        raw_dict=evt.to_dict(),
+                    )
                 self._send_json(201, {"event": evt.to_dict(), "cef": evt.to_cef()})
             else:
                 self._send_json(200, {"status": "BENIGN", "message": "No security violation detected."})
+            return
+
+        # 10. Query Historical Telemetry from Persistent Storage
+        if path == "/api/v1/telemetry/query":
+            allowed, identity, reason = self._authorize(PERM_TELEMETRY_READ)
+            if not allowed:
+                self._send_json(403, {"error": reason})
+                return
+            if not self.storage_engine:
+                self._send_json(500, {"error": "Storage engine uninitialized."})
+                return
+            qfilter = TelemetryQueryFilter(
+                tenant_id=body.get("tenant_id") or (identity.tenant_id if identity else None),
+                cluster_id=body.get("cluster_id"),
+                min_severity=body.get("min_severity"),
+                limit=int(body.get("limit", 100)),
+            )
+            events = self.storage_engine.query_telemetry_events(qfilter)
+            self._send_json(200, {"events": events, "count": len(events)})
+            return
+
+        # 11. Dispatch Incident Notification (ChatOps / PagerDuty)
+        if path == "/api/v1/notifications/alert":
+            allowed, identity, reason = self._authorize(PERM_FLEET_MANAGE)
+            if not allowed:
+                self._send_json(403, {"error": reason})
+                return
+            channel = body.get("channel", "slack").lower()
+            url = body.get("webhook_url", "")
+            alert = AlertPayload(
+                title=body.get("title", "Security Alert"),
+                severity=body.get("severity", "HIGH"),
+                description=body.get("description", ""),
+                cluster_id=body.get("cluster_id", "default"),
+                namespace=body.get("namespace", "default"),
+                workload_name=body.get("workload_name", ""),
+                remediation=body.get("remediation", ""),
+            )
+            try:
+                if channel == "slack":
+                    ok = NotificationDispatcher.send_slack_alert(url, alert)
+                elif channel == "teams":
+                    ok = NotificationDispatcher.send_teams_alert(url, alert)
+                elif channel == "pagerduty":
+                    ok = NotificationDispatcher.send_pagerduty_event(body.get("routing_key", ""), alert)
+                else:
+                    self._send_json(400, {"error": f"Unsupported channel: {channel}"})
+                    return
+                self._send_json(200, {"status": "DISPATCHED" if ok else "FAILED"})
+            except Exception as e:
+                self._send_json(400, {"error": str(e)})
             return
 
         self._send_json(404, {"error": f"Endpoint '{path}' not found."})
@@ -562,11 +651,15 @@ class EnterpriseServer:
         port: int = 8443,
         auth_manager: Optional[EnterpriseAuthManager] = None,
         fleet_manager: Optional[FleetManager] = None,
+        storage_engine: Optional[EnterpriseStorageEngine] = None,
+        notification_dispatcher: Optional[NotificationDispatcher] = None,
     ):
         self.host = host
         self.port = port
         self.auth_manager = auth_manager or EnterpriseAuthManager()
         self.fleet_manager = fleet_manager or FleetManager()
+        self.storage_engine = storage_engine or EnterpriseStorageEngine()
+        self.notification_dispatcher = notification_dispatcher or NotificationDispatcher()
         self.ebpf_engine = EBPFTelemetryEngine()
         self.siem_forwarder = SIEMForwarder("CEF")
         self.scanner = NativeSecurityScanner()
@@ -585,6 +678,8 @@ class EnterpriseServer:
         EnterpriseAPIHandler.siem_forwarder = self.siem_forwarder
         EnterpriseAPIHandler.scanner = self.scanner
         EnterpriseAPIHandler.vex_engine = self.vex_engine
+        EnterpriseAPIHandler.storage_engine = self.storage_engine
+        EnterpriseAPIHandler.notification_dispatcher = self.notification_dispatcher
 
         # Bind server (allow port reuse)
         class ReusableServer(HTTPServer):

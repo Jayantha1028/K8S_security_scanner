@@ -96,6 +96,9 @@ class LeaderElector:
 
             return False
 
+    # Alias for method naming compatibility
+    try_acquire_or_renew = acquire_or_renew
+
     def step_down(self):
         """Voluntarily relinquishes leadership during graceful shutdown."""
         with self._lock:

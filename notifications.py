@@ -159,6 +159,9 @@ class NotificationDispatcher:
         }
         return cls._post_json(url, payload, timeout=timeout)
 
+    # Alias for API uniformity
+    send_pagerduty_event = trigger_pagerduty_incident
+
     # --------------------------------------------------------------------------
     # Internal HTTP Dispatcher
     # --------------------------------------------------------------------------

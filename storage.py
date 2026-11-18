@@ -16,6 +16,7 @@ Capabilities:
 3. Automated Retention Policies & Partition Pruning.
 """
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone, timedelta
 import json
@@ -23,7 +24,7 @@ import logging
 import os
 from pathlib import Path
 import sqlite3
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 logger = logging.getLogger("NativeScanner.Storage")
 
@@ -49,13 +50,18 @@ class EnterpriseStorageEngine:
         self.db_path = db_path or os.environ.get("SCANNER_DB_PATH", "/tmp/k8s_scanner_telemetry.db")
         self._init_sqlite_schema()
 
-    def _get_connection(self) -> sqlite3.Connection:
+    @contextmanager
+    def _get_connection(self) -> Iterator[sqlite3.Connection]:
         conn = sqlite3.connect(self.db_path, timeout=10.0)
         conn.row_factory = sqlite3.Row
         # Enable Write-Ahead Logging (WAL) for high concurrency
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA synchronous=NORMAL;")
-        return conn
+        try:
+            yield conn
+            conn.commit()
+        finally:
+            conn.close()
 
     def _init_sqlite_schema(self):
         """Initializes relational tables and performance indices."""

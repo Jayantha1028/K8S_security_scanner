@@ -1,0 +1,140 @@
+name: Release & Multi-Arch Distribution
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  build-binaries:
+    name: Build Native Executables (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            target: linux-x86_64
+            binary_name: k8s-native-scanner-linux-amd64
+          - os: macos-14
+            target: darwin-arm64
+            binary_name: k8s-native-scanner-darwin-arm64
+          - os: macos-13
+            target: darwin-x86_64
+            binary_name: k8s-native-scanner-darwin-amd64
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyInstaller and PyYAML
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pyyaml
+
+      - name: Build Standalone Single-File Binary
+        run: |
+          pyinstaller --onefile \
+            --name ${{ matrix.binary_name }} \
+            --clean \
+            --strip \
+            cli.py
+
+      - name: Generate Checksum
+        run: |
+          cd dist
+          sha256sum ${{ matrix.binary_name }} > ${{ matrix.binary_name }}.sha256
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.binary_name }}
+          path: |
+            dist/${{ matrix.binary_name }}
+            dist/${{ matrix.binary_name }}.sha256
+
+  build-and-sign-images:
+    name: Build & Cosign Multi-Arch Container Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Metadata & Tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest
+
+      - name: Build and Push OCI Image (Multi-Arch)
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Sign Container Image with Cosign (Keyless)
+        run: |
+          cosign sign --yes "${{ steps.meta.outputs.tags }}"
+
+  create-github-release:
+    name: Create GitHub Release with Artifacts
+    needs: [build-binaries, build-and-sign-images]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Download Built Binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Consolidate Artifacts
+        run: |
+          mkdir -p dist
+          find release-artifacts -type f -exec cp {} dist/ \;
+          cd dist
+          sha256sum * > SHA256SUMS.txt || true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+            deploy/helm/k8s-native-scanner
+            deploy/k8s/turnkey-operator.yaml
+          draft: false
+          prerelease: false
+          generate_release_notes: true

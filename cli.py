@@ -53,6 +53,9 @@ try:
     from .enterprise_server import EnterpriseServer
     from .cloud_cspm import CloudCSPMEngine
     from .crds import KubernetesCRDManager
+    from .storage import EnterpriseStorageEngine
+    from .notifications import NotificationDispatcher, AlertPayload
+    from .openapi import get_openapi_spec
 except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from container import HybridContainerLayerScanner
@@ -86,6 +89,9 @@ except ImportError:
     from enterprise_server import EnterpriseServer
     from cloud_cspm import CloudCSPMEngine
     from crds import KubernetesCRDManager
+    from storage import EnterpriseStorageEngine
+    from notifications import NotificationDispatcher, AlertPayload
+    from openapi import get_openapi_spec
 
 
 def print_banner():
@@ -826,12 +832,70 @@ def cmd_server(args):
     print_banner()
     print(f"[*] Starting Kubernetes Native Security Enterprise Server on http://{host}:{port} ...")
     print(f"    • Built-in Web Console : http://{host}:{port}/")
+    print(f"    • Swagger UI API Docs  : http://{host}:{port}/docs")
+    print(f"    • OpenAPI 3.0.3 Spec   : http://{host}:{port}/api/v1/openapi.json")
     print(f"    • Prometheus Metrics   : http://{host}:{port}/metrics")
     print(f"    • REST API Endpoints   : http://{host}:{port}/api/v1/")
     print(f"    Press Ctrl+C to stop.\n")
     server = EnterpriseServer(host=host, port=port)
     server.start(background=False)
     return 0
+
+
+def cmd_docs(args):
+    spec = get_openapi_spec()
+    out = getattr(args, "output", None)
+    if out:
+        with open(out, "w", encoding="utf-8") as f:
+            json.dump(spec, f, indent=2)
+        print(f"[✓] OpenAPI 3.0.3 specification exported to: {out}")
+    else:
+        print(json.dumps(spec, indent=2))
+    return 0
+
+
+def cmd_storage(args):
+    action = getattr(args, "action", "stats") or "stats"
+    db_path = getattr(args, "db_path", None)
+    engine = EnterpriseStorageEngine(db_path=db_path)
+    if action == "stats":
+        stats = engine.get_stats()
+        if getattr(args, "json", False):
+            print(json.dumps(stats, indent=2))
+        else:
+            print("[*] Enterprise Storage Engine Telemetry:")
+            for k, v in stats.items():
+                print(f"    • {k:<30}: {v}")
+    elif action == "prune":
+        days = getattr(args, "days", 90) or 90
+        count = engine.prune_retention(days_to_keep=days)
+        print(f"[✓] Pruned {count} historical records older than {days} days.")
+    return 0
+
+
+def cmd_notify(args):
+    channel = (getattr(args, "channel", "slack") or "slack").lower()
+    url = getattr(args, "url", "")
+    alert = AlertPayload(
+        title=getattr(args, "title", "Enterprise Security Alert"),
+        severity=getattr(args, "severity", "HIGH"),
+        description=getattr(args, "description", "Automated alert dispatched from scanner CLI."),
+        cluster_id=getattr(args, "cluster", "production-fleet"),
+        namespace=getattr(args, "namespace", "default"),
+        workload_name=getattr(args, "workload", "demo-app"),
+        remediation=getattr(args, "remediation", "Drop Linux capabilities and set readOnlyRootFilesystem=true"),
+    )
+    if channel == "slack":
+        ok = NotificationDispatcher.send_slack_alert(url, alert)
+    elif channel == "teams":
+        ok = NotificationDispatcher.send_teams_alert(url, alert)
+    elif channel == "pagerduty":
+        ok = NotificationDispatcher.send_pagerduty_event(url, alert)
+    else:
+        print(f"[!] Unsupported notification channel: {channel}")
+        return 1
+    print(f"[{'✓' if ok else '!'}] Alert dispatch status: {'SUCCESS' if ok else 'FAILED'}")
+    return 0 if ok else 1
 
 
 def cmd_fleet(args):
@@ -1172,6 +1236,28 @@ def main():
     p_cspm.add_argument("--json", action="store_true", help="Output raw JSON results")
     p_cspm.add_argument("--min-score", type=float, default=70.0, help="Minimum CSPM posture score threshold (default: 70.0)")
 
+    # docs
+    p_docs = subparsers.add_parser("docs", help="Export OpenAPI 3.0.3 specification schema")
+    p_docs.add_argument("-o", "--output", help="Save OpenAPI schema to JSON file")
+
+    # storage
+    p_stor = subparsers.add_parser("storage", help="Enterprise Telemetry Persistence & Maintenance (SQLite WAL)")
+    p_stor.add_argument("action", nargs="?", default="stats", choices=["stats", "prune"], help="Action: stats (default) or prune")
+    p_stor.add_argument("--db-path", help="Override SQLite database file path")
+    p_stor.add_argument("--days", type=int, default=90, help="Days to keep when pruning records (default: 90)")
+    p_stor.add_argument("--json", action="store_true", help="Output raw JSON results")
+
+    # notify
+    p_notif = subparsers.add_parser("notify", help="Dispatch security alert card to Slack, MS Teams, or PagerDuty")
+    p_notif.add_argument("--channel", choices=["slack", "teams", "pagerduty"], default="slack", help="Target notification channel")
+    p_notif.add_argument("--url", required=True, help="Webhook URL or PagerDuty routing key")
+    p_notif.add_argument("--title", default="Security Deficit Detected", help="Alert title")
+    p_notif.add_argument("--severity", choices=["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"], default="HIGH", help="Alert severity")
+    p_notif.add_argument("--description", default="Runtime policy violation detected in production workload.", help="Detailed incident description")
+    p_notif.add_argument("--cluster", default="production-fleet", help="Affected cluster ID")
+    p_notif.add_argument("--namespace", default="prod", help="Kubernetes namespace")
+    p_notif.add_argument("--workload", default="backend-api", help="Kubernetes workload name")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1238,6 +1324,12 @@ def main():
         sys.exit(cmd_crd(args))
     elif args.command == "cspm":
         sys.exit(cmd_cspm(args))
+    elif args.command == "docs":
+        sys.exit(cmd_docs(args))
+    elif args.command == "storage":
+        sys.exit(cmd_storage(args))
+    elif args.command == "notify":
+        sys.exit(cmd_notify(args))
 
 
 if __name__ == "__main__":

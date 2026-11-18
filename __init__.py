@@ -116,6 +116,10 @@ try:
     from .enterprise_server import EnterpriseServer, EnterpriseAPIHandler
     from .cloud_cspm import CloudCSPMEngine, CloudCSPMReport, CSPMFinding
     from .crds import KubernetesCRDManager, SecurityPolicySpec
+    from .storage import EnterpriseStorageEngine, TelemetryQueryFilter
+    from .notifications import NotificationDispatcher, AlertPayload
+    from .leader_election import LeaderElector, LeaderLease
+    from .openapi import get_openapi_spec, get_swagger_ui_html
 except ImportError:
     from taxonomy import TAXONOMY_56
     from scanner import (
@@ -204,6 +208,12 @@ except ImportError:
     from fleet import FleetManager, ClusterRecord, FleetPolicy, FleetDriftSummary
     from ebpf import EBPFTelemetryEngine, SIEMForwarder, KernelSecurityEvent
     from enterprise_server import EnterpriseServer, EnterpriseAPIHandler
+    from cloud_cspm import CloudCSPMEngine, CloudCSPMReport, CSPMFinding
+    from crds import KubernetesCRDManager, SecurityPolicySpec
+    from storage import EnterpriseStorageEngine, TelemetryQueryFilter
+    from notifications import NotificationDispatcher, AlertPayload
+    from leader_election import LeaderElector, LeaderLease
+    from openapi import get_openapi_spec, get_swagger_ui_html
 
 KillChain = KillChainPath
 
@@ -301,4 +311,17 @@ __all__ = [
     "KernelSecurityEvent",
     "EnterpriseServer",
     "EnterpriseAPIHandler",
+    "CloudCSPMEngine",
+    "CloudCSPMReport",
+    "CSPMFinding",
+    "KubernetesCRDManager",
+    "SecurityPolicySpec",
+    "EnterpriseStorageEngine",
+    "TelemetryQueryFilter",
+    "NotificationDispatcher",
+    "AlertPayload",
+    "LeaderElector",
+    "LeaderLease",
+    "get_openapi_spec",
+    "get_swagger_ui_html",
 ]
