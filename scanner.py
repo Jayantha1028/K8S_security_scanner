@@ -20,6 +20,7 @@ Usage:
 """
 
 import argparse
+import functools
 import json
 import math
 import os
@@ -48,26 +49,116 @@ except ImportError:
         from vulnerability_taxonomy_56 import TAXONOMY_56
 
 # High-entropy secret patterns
-SECRET_REGEXES = [
+SECRET_EXACT_PATTERNS = [
     (re.compile(r"AKIA[0-9A-Z]{16}"), "AWS Access Key ID"),
     (re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"), "Cryptographic Private Key"),
     (re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"), "JSON Web Token (JWT)"),
     (re.compile(r"ghp_[0-9a-zA-Z]{36}"), "GitHub Personal Access Token"),
-    (re.compile(r"(?i)(password|secret|passwd|api_key|apikey|token|private_key)\s*[:=]\s*['\"]?([^\s'\"]{6,})['\"]?"), "Hardcoded Credential Assignment"),
 ]
+
+GENERIC_CREDENTIAL_PATTERN = re.compile(
+    r"(?i)(password|secret|passwd|api_key|apikey|token|private_key)\s*[:=]\s*['\"]?([^\s'\"]{6,})['\"]?"
+)
+
+SECRET_REGEXES = SECRET_EXACT_PATTERNS + [
+    (GENERIC_CREDENTIAL_PATTERN, "Hardcoded Credential Assignment")
+]
+
+_URL_PREFIXES = (
+    "http://", "https://", "ftp://", "jdbc:", "tcp://", "udp://", "grpc://",
+    "postgres://", "postgresql://", "mysql://", "redis://", "amqp://", "amqps://",
+    "dns://", "file://", "ws://", "wss://", "stratum+tcp://", "stratum+ssl://"
+)
+
+_UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+_HEX_DIGEST_RE = re.compile(r"^(?:sha256:|sha1:|sha512:|md5:)?[0-9a-fA-F]{32,128}$")
+_VAR_INTERPOLATION_RE = re.compile(r"^(\{\{.*\}\}|\$\([A-Za-z0-9_.:-]+\)|\$\{[A-Za-z0-9_.:-]+\})$")
+
+_SAFE_PLACEHOLDERS = {
+    "change_me", "changeme", "replace_me", "replaceme", "placeholder",
+    "your_key", "your_secret", "dummy", "example", "<enter_", "<insert_",
+    "todo", "undefined", "redacted", "<redacted>", "xxx", "test_key",
+    "dummy_token", "sample", "none", "null", "true", "false", "default",
+    "localhost", "unrendered-param", "<changeme>", "enter-here"
+}
+
+
+def is_likely_false_positive_secret(val: str, var_name: str = "") -> bool:
+    """
+    Evaluates whether a value is a legitimate non-secret (URL, UUID,
+    Kubernetes downward API interpolation, Helm parameter, digest, or dummy placeholder).
+    Dramatically reduces false positives in secret detection.
+    """
+    if not val or len(val) < 6:
+        return True
+
+    val_strip = val.strip()
+    val_lower = val_strip.lower()
+
+    # 1. URLs and Protocol Schemes
+    if val_lower.startswith(_URL_PREFIXES):
+        return True
+
+    # 2. Variable interpolation & Helm templates
+    if "{{" in val_strip and "}}" in val_strip:
+        return True
+    if (val_strip.startswith("$(") and val_strip.endswith(")")) or (val_strip.startswith("${") and val_strip.endswith("}")):
+        return True
+    if _VAR_INTERPOLATION_RE.match(val_strip):
+        return True
+
+    # 3. UUID / GUID identifiers
+    if len(val_strip) == 36 and _UUID_RE.match(val_strip):
+        return True
+
+    # 4. Standard cryptographic digests, git SHAs, or checksums
+    if _HEX_DIGEST_RE.match(val_strip):
+        return True
+
+    # 5. Placeholders and template dummy values
+    if val_lower in _SAFE_PLACEHOLDERS or any(p in val_lower for p in ("replace_me", "change_me", "placeholder", "your_token", "redacted")):
+        return True
+
+    # 6. Service FQDNs / DNS names
+    if val_lower.endswith((".svc.cluster.local", ".svc", ".cluster.local", ".internal")):
+        return True
+
+    # 7. File paths and MIME content types without credential indicators
+    if (val_strip.startswith("/") and not any(k in val_lower for k in ("key", "secret", "token", "pass"))) or ("/" in val_strip and val_lower.startswith(("application/", "text/", "image/"))):
+        return True
+
+    # 8. Homogeneous / repeated padding characters (e.g. "--------------------")
+    if len(set(val_strip)) <= 3:
+        return True
+
+    return False
 
 
 def shannon_entropy(data: str) -> float:
-    """Calculate Shannon entropy of a string to identify cryptographic randomness."""
-    if not data or len(data) < 8:
-        return 0.0
-    entropy = 0.0
+    """
+    Calculate Shannon entropy of a string to identify cryptographic randomness.
+    Optimized with mathematical factoring to minimize logarithmic calculations:
+    H = log2(L) - (1/L) * sum(c * log2(c) for c > 1).
+    """
     length = len(data)
-    counts = Counter(data)
-    for count in counts.values():
-        p = count / length
-        entropy -= p * math.log2(p)
-    return entropy
+    if length < 8:
+        return 0.0
+
+    counts: Dict[str, int] = {}
+    for ch in data:
+        counts[ch] = counts.get(ch, 0) + 1
+
+    num_distinct = len(counts)
+    if num_distinct <= 1:
+        return 0.0
+
+    # Fast-path: If all characters are unique, entropy is log2(L) exactly
+    if num_distinct == length:
+        return math.log2(length)
+
+    # Mathematical property: sum(c * log2(c)) only for c > 1 (since 1 * log2(1) == 0)
+    sum_c_log_c = sum(c * math.log2(c) for c in counts.values() if c > 1)
+    return math.log2(length) - (sum_c_log_c / length)
 
 
 # Canonical container library base images for supply chain typosquatting auditing
@@ -79,8 +170,9 @@ CANONICAL_LIBRARY_IMAGES = {
 }
 
 
+@functools.lru_cache(maxsize=4096)
 def levenshtein_distance(s1: str, s2: str) -> int:
-    """Compute Levenshtein edit distance between two strings."""
+    """Compute Levenshtein edit distance between two strings with LRU caching."""
     if len(s1) < len(s2):
         return levenshtein_distance(s2, s1)
     if len(s2) == 0:
@@ -98,6 +190,7 @@ def levenshtein_distance(s1: str, s2: str) -> int:
     return prev[len(s2)]
 
 
+@functools.lru_cache(maxsize=1024)
 def check_image_typosquatting(image: str) -> Tuple[bool, Optional[str], int]:
     """
     Detect if an image name is a typosquatting candidate against canonical base images.
@@ -569,8 +662,8 @@ class NativeSecurityScanner:
         files = [f for f in sorted(p.glob(pattern)) if f.is_file() and not f.name.startswith(".")]
         if not files:
             return []
-        if len(files) == 1:
-            return [self.scan_file(str(files[0]))]
+        if len(files) <= 4:
+            return [self.scan_file(str(f)) for f in files]
 
         max_workers = min(16, (os.cpu_count() or 1) * 2)
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -756,16 +849,54 @@ class NativeSecurityScanner:
                               desc="Pod exposes listening network ports without mutual TLS (mTLS) service mesh encryption",
                               remed="Enable automatic mTLS sidecar injection (e.g. sidecar.istio.io/inject: 'true')")
 
-        # 5. Volumes & HostPaths
+        # 5. Volumes & HostPaths (Refined Severity & Read-Only Distinction)
         volumes = pod_spec.get("volumes") or []
+        all_workload_containers = (pod_spec.get("containers") or []) + (pod_spec.get("initContainers") or [])
         for v in volumes:
             if isinstance(v, dict) and "hostPath" in v:
                 hp = v.get("hostPath", {}) or {}
-                hp_path = hp.get("path", "")
-                self._add_finding(report, "V45" if hp_path.startswith(("/etc", "/var/run", "/")) else "V47",
-                                  target=f"{workload_name}:{v.get('name', 'volume')}",
-                                  desc=f"HostPath volume mounted: {hp_path}",
-                                  remed="Use PersistentVolumeClaims or emptyDir instead of hostPath")
+                hp_path = str(hp.get("path", "")).strip()
+                v_name = v.get("name", "volume")
+                hp_target = f"{workload_name}:{v_name}"
+
+                # Check if this volume is mounted read-only across all referencing containers
+                is_read_only = True
+                is_mounted = False
+                for c_item in all_workload_containers:
+                    if isinstance(c_item, dict):
+                        for vm in (c_item.get("volumeMounts") or []):
+                            if isinstance(vm, dict) and vm.get("name") == v_name:
+                                is_mounted = True
+                                if not vm.get("readOnly", False):
+                                    is_read_only = False
+                                    break
+                if not is_mounted:
+                    is_read_only = False
+
+                # Critical Socket Mounts (V46)
+                if any(sock in hp_path.lower() for sock in ("docker.sock", "containerd.sock", "crio.sock", "podman.sock")):
+                    self._add_finding(report, "V46",
+                                      target=hp_target,
+                                      desc=f"Container runtime socket mounted into workload: {hp_path}",
+                                      remed="Never mount container runtime sockets (/var/run/docker.sock) inside workloads")
+                # Host Root Directory Mounts (V45)
+                elif hp_path in ("/", "/root") or hp_path == "":
+                    self._add_finding(report, "V45",
+                                      target=hp_target,
+                                      desc=f"Host root directory mounted: {hp_path}",
+                                      remed="Restrict hostPath volume mounts using admission control")
+                # Benign read-only host system CA trust stores / timezone
+                elif is_read_only and any(hp_path.startswith(safe_p) for safe_p in (
+                    "/etc/ssl/certs", "/etc/pki/tls/certs", "/usr/share/ca-certificates", "/etc/ssl/cert.pem", "/etc/localtime"
+                )):
+                    pass
+                # Node Configuration & System Storage (V47)
+                else:
+                    ro_desc = " (read-only)" if is_read_only else ""
+                    self._add_finding(report, "V47",
+                                      target=hp_target,
+                                      desc=f"HostPath volume mounted{ro_desc}: {hp_path}",
+                                      remed="Use PersistentVolumeClaims or emptyDir instead of hostPath")
 
         # 6. Containers & SecurityContext
         containers = (pod_spec.get("containers") or []) + (pod_spec.get("initContainers") or [])
@@ -846,21 +977,22 @@ class NativeSecurityScanner:
                                   desc="Missing memory limit (vulnerable to node OOM crash)",
                                   remed="Set resources.limits.memory")
 
-            # Supply Chain Image Checks
+            # Supply Chain Image Checks (with Immutable Digest & Provenance Accuracy)
             image = str(c.get("image", ""))
-            if ":" not in image or image.endswith(":latest") or "@" not in image:
-                if ":" not in image or image.endswith(":latest"):
+            has_immutable_digest = "@sha256:" in image
+            if not has_immutable_digest:
+                if ":" not in image or image.split("@")[0].endswith(":latest"):
                     self._add_finding(report, "V15", target=c_target,
                                       desc=f"Image uses mutable tag or lacks tag: {image}",
                                       remed="Pin container image to an immutable tag or SHA256 digest")
-            if c.get("imagePullPolicy") != "Always" and (":latest" in image or ":" not in image):
+            if not has_immutable_digest and c.get("imagePullPolicy") != "Always" and (":latest" in image or ":" not in image):
                 self._add_finding(report, "V21", target=c_target,
                                       desc="Risky ImagePullPolicy (IfNotPresent with mutable tags)",
                                       remed="Set imagePullPolicy: Always when using mutable tags")
 
             # V19: Unverified Image Signature / Digest
             has_cosign = any("cosign" in k.lower() or "notary" in k.lower() for k in annotations)
-            if ("@" not in image or not image.split("@")[-1].startswith("sha256:")) and not has_cosign:
+            if not has_immutable_digest and not has_cosign:
                 if any(image.startswith(p) for p in ("docker.io/", "quay.io/", "ghcr.io/", "gcr.io/")) or "/" in image:
                     self._add_finding(report, "V19", target=c_target,
                                       desc=f"Container image '{image}' lacks cryptographic Cosign/Notary signature verification and immutable digest",
@@ -909,25 +1041,37 @@ class NativeSecurityScanner:
             except Exception:
                 pass
 
-            # Secret & Entropy Auditing in Environment Variables
+            # Secret & Entropy Auditing in Environment Variables (with False Positive Suppression)
             env_vars = c.get("env") or []
             weak_passwords = {"root", "admin", "password", "123456", "12345678", "toor", "pass", "qwerty", "default"}
             for env in env_vars:
                 if isinstance(env, dict):
                     val = str(env.get("value", ""))
                     var_name = str(env.get("name", ""))
-                    # Check regexes
-                    for regex, sec_title in SECRET_REGEXES:
+                    if not val and not var_name:
+                        continue
+
+                    # 1. Exact High-Confidence Secret Signatures (AWS Keys, Private Keys, JWTs, Personal Access Tokens)
+                    matched_exact_secret = False
+                    for regex, sec_title in SECRET_EXACT_PATTERNS:
                         if regex.search(val) or regex.search(f"{var_name}={val}"):
                             self._add_finding(report, "V18", target=f"{c_target}:{var_name}",
                                               desc=f"Plaintext secret credential detected ({sec_title})",
                                               remed="Inject credentials via SecretKeyRef instead of plaintext literals")
+                            matched_exact_secret = True
                             break
-                    # Check Shannon entropy for random keys
-                    if len(val) >= 16 and shannon_entropy(val) >= self.entropy_threshold:
-                        self._add_finding(report, "V18", target=f"{c_target}:{var_name}",
-                                          desc=f"High-entropy credential string detected (H={shannon_entropy(val):.2f})",
-                                          remed="Store high-entropy token in a Kubernetes Secret")
+
+                    # 2. Check generic credentials and Shannon entropy only if not a benign false positive
+                    if not matched_exact_secret:
+                        if not is_likely_false_positive_secret(val, var_name):
+                            if GENERIC_CREDENTIAL_PATTERN.search(f"{var_name}={val}"):
+                                self._add_finding(report, "V18", target=f"{c_target}:{var_name}",
+                                                  desc="Plaintext secret credential detected (Hardcoded Credential Assignment)",
+                                                  remed="Inject credentials via SecretKeyRef instead of plaintext literals")
+                            elif len(val) >= 16 and shannon_entropy(val) >= self.entropy_threshold:
+                                self._add_finding(report, "V18", target=f"{c_target}:{var_name}",
+                                                  desc=f"High-entropy credential string detected (H={shannon_entropy(val):.2f})",
+                                                  remed="Store high-entropy token in a Kubernetes Secret")
 
                     # V22: Default/Trivial Password in Environment
                     vname_upper = var_name.upper()
@@ -1215,12 +1359,12 @@ class NativeSecurityScanner:
             "missing_cpu_limit": float(1 if "V13" in vulns else 0),
             "missing_memory_limit": float(1 if "V14" in vulns else 0),
             "missing_seccomp_profile": float(1 if "V12" in vulns else 0),
-            "docker_socket_mount": float(1 if "V45" in vulns else 0),
-            "proc_sys_mount": float(1 if any(v in vulns for v in ("V46", "V47")) else 0),
+            "docker_socket_mount": float(1 if any(v in vulns for v in ("V45", "V46")) else 0),
+            "proc_sys_mount": float(1 if any(v in vulns for v in ("V46", "V47", "V56")) else 0),
             "cluster_admin_binding": float(1 if "V26" in vulns else 0),
             "secret_read_permission": float(1 if "V24" in vulns else 0),
             "pod_exec_permission": float(1 if "V25" in vulns else 0),
-            "shannon_entropy_high": float(1 if any(f.vuln_id == "V18" and "Shannon Entropy" in f.description for f in report.findings) else 0),
+            "shannon_entropy_high": float(1 if any(f.vuln_id == "V18" and "entropy" in f.description.lower() for f in report.findings) else 0),
         }
         report.features = features
 
