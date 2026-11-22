@@ -192,14 +192,15 @@ class EnterpriseAuthManager:
         parts = raw_key.split("_")
         if len(parts) < 5:
             return None
-        key_id = f"{parts[3]}_{parts[4]}" if len(parts) > 5 else parts[3]
+        key_id = f"{parts[3]}_{parts[4]}" if len(parts) > 4 else parts[3]
 
-        # Lookup by key_id
-        matching_record = None
-        for k_id, rec in self._api_keys.items():
-            if raw_key.startswith(f"k8s_sec_live_{k_id}"):
-                matching_record = rec
-                break
+        # Fast O(1) lookup by key_id
+        matching_record = self._api_keys.get(key_id)
+        if not matching_record:
+            for k_id, rec in self._api_keys.items():
+                if raw_key.startswith(f"k8s_sec_live_{k_id}"):
+                    matching_record = rec
+                    break
 
         if not matching_record or not matching_record.is_active:
             return None
@@ -271,6 +272,22 @@ class EnterpriseAuthManager:
             return None
 
         b64_header, b64_payload, b64_sig = jwt_token.split(".")
+
+        # 1. Strict RFC 7519 Header validation (Algorithm confusion prevention)
+        try:
+            header_json = self._base64url_decode(b64_header).decode("utf-8")
+            header = json.loads(header_json)
+        except Exception:
+            return None
+
+        if not isinstance(header, dict):
+            return None
+        # Enforce strict HS256 algorithm — explicitly block 'none', asymmetric algs, or unrecognized algorithms
+        if header.get("alg") != "HS256":
+            logger.warning(f"Rejected JWT with unsupported or disallowed algorithm: {header.get('alg')}")
+            return None
+
+        # 2. Cryptographic signature verification using constant-time comparison
         message = f"{b64_header}.{b64_payload}".encode("utf-8")
         expected_sig = hmac.new(self.master_secret, message, hashlib.sha256).digest()
         expected_b64_sig = self._base64url_encode(expected_sig)
@@ -278,10 +295,14 @@ class EnterpriseAuthManager:
         if not hmac.compare_digest(b64_sig, expected_b64_sig):
             return None
 
+        # 3. Payload decoding & claims validation
         try:
             payload_json = self._base64url_decode(b64_payload).decode("utf-8")
             payload = json.loads(payload_json)
         except Exception:
+            return None
+
+        if not isinstance(payload, dict):
             return None
 
         # Expiry check

@@ -12,7 +12,13 @@ import json
 import os
 from pathlib import Path
 import sys
-from typing import List, Optional
+import time
+from typing import Any, Dict, List, Optional
+
+def get_arg(args: Any, name: str, default: Any = None) -> Any:
+    """Safe, typed helper to retrieve CLI argument values with fallback defaults."""
+    val = getattr(args, name, default)
+    return default if val is None else val
 
 try:
     from . import __version__
@@ -750,12 +756,12 @@ def cmd_verify_image(args):
 
 
 def cmd_kubecam(args):
-    engine = KubeCamEngine(kubeconfig=getattr(args, "kubeconfig", None))
-    action = getattr(args, "action", "snapshot") or "snapshot"
+    engine = KubeCamEngine(kubeconfig=get_arg(args, "kubeconfig"))
+    action = get_arg(args, "action", "snapshot")
 
     if action == "snapshot":
-        frame = engine.capture_frame(namespace=getattr(args, "namespace", None))
-        if getattr(args, "json", False):
+        frame = engine.capture_frame(namespace=get_arg(args, "namespace"))
+        if get_arg(args, "json", False):
             print(json.dumps(frame.to_dict(), indent=2))
         else:
             print(f"\n[✓] KubeCam Security Snapshot #{frame.frame_id} Captured:")
@@ -764,37 +770,44 @@ def cmd_kubecam(args):
             print(f"    - Compliance Score: {frame.cluster_compliance_score:.1f}%")
             print(f"    - Blast Radius    : {frame.cluster_blast_radius:.1f}/100.0")
             print(f"    - Frame Hash      : {frame.frame_hash}")
-        if getattr(args, "output", None):
-            Path(args.output).write_text(json.dumps(frame.to_dict(), indent=2), encoding="utf-8")
-            print(f"[✓] Snapshot saved to: {args.output}")
+        out_path = get_arg(args, "output")
+        if out_path:
+            Path(out_path).write_text(json.dumps(frame.to_dict(), indent=2), encoding="utf-8")
+            print(f"[✓] Snapshot saved to: {out_path}")
+        return 0
 
     elif action == "record":
-        interval = getattr(args, "interval", 5) or 5
-        frames_count = getattr(args, "frames", 3) or 3
+        interval = get_arg(args, "interval", 5)
+        frames_count = get_arg(args, "frames", 3)
         print(f"[*] Recording KubeCam filmstrip ({frames_count} frames, interval={interval}s)...")
         filmstrip = engine.record_time_lapse(
             interval_seconds=interval,
             total_frames=frames_count,
-            namespace=getattr(args, "namespace", None),
+            namespace=get_arg(args, "namespace"),
         )
-        if getattr(args, "json", False):
+        if get_arg(args, "json", False):
             print(json.dumps(filmstrip.to_dict(), indent=2))
         else:
             print(engine.format_filmstrip_summary(filmstrip))
-        if getattr(args, "output", None):
-            Path(args.output).write_text(json.dumps(filmstrip.to_dict(), indent=2), encoding="utf-8")
-            print(f"[✓] Filmstrip saved to: {args.output}")
+        out_path = get_arg(args, "output")
+        if out_path:
+            Path(out_path).write_text(json.dumps(filmstrip.to_dict(), indent=2), encoding="utf-8")
+            print(f"[✓] Filmstrip saved to: {out_path}")
+        return 0
 
     elif action == "kubescape":
-        frame = engine.capture_frame(namespace=getattr(args, "namespace", None))
+        frame = engine.capture_frame(namespace=get_arg(args, "namespace"))
         data = engine.export_kubescape_format(frame)
-        if getattr(args, "output", None):
-            Path(args.output).write_text(json.dumps(data, indent=2), encoding="utf-8")
-            print(f"[✓] Kubescape-compliant ARMO report exported to: {args.output}")
+        out_path = get_arg(args, "output")
+        if out_path:
+            Path(out_path).write_text(json.dumps(data, indent=2), encoding="utf-8")
+            print(f"[✓] Kubescape-compliant ARMO report exported to: {out_path}")
         else:
             print(json.dumps(data, indent=2))
+        return 0
 
-    return 0
+    print(f"[!] Unrecognized kubecam action: '{action}'. Valid actions: snapshot, record, kubescape", file=sys.stderr)
+    return 1
 
 
 def cmd_lifecycle(args):
@@ -855,36 +868,54 @@ def cmd_docs(args):
     return 0
 
 
+def cmd_benchmark(args):
+    try:
+        from benchmarks.run_benchmarks import run_benchmarks
+    except ImportError:
+        try:
+            from .benchmarks.run_benchmarks import run_benchmarks
+        except ImportError:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from benchmarks.run_benchmarks import run_benchmarks
+    iterations = get_arg(args, "iterations", 300)
+    markdown = get_arg(args, "markdown", False)
+    run_benchmarks(iterations=iterations, output_markdown=markdown)
+    return 0
+
+
 def cmd_storage(args):
-    action = getattr(args, "action", "stats") or "stats"
-    db_path = getattr(args, "db_path", None)
+    action = get_arg(args, "action", "stats")
+    db_path = get_arg(args, "db_path")
     engine = EnterpriseStorageEngine(db_path=db_path)
     if action == "stats":
         stats = engine.get_stats()
-        if getattr(args, "json", False):
+        if get_arg(args, "json", False):
             print(json.dumps(stats, indent=2))
         else:
             print("[*] Enterprise Storage Engine Telemetry:")
             for k, v in stats.items():
                 print(f"    • {k:<30}: {v}")
+        return 0
     elif action == "prune":
-        days = getattr(args, "days", 90) or 90
+        days = get_arg(args, "days", 90)
         count = engine.prune_retention(days_to_keep=days)
         print(f"[✓] Pruned {count} historical records older than {days} days.")
-    return 0
+        return 0
+    print(f"[!] Unrecognized storage action: '{action}'. Valid actions: stats, prune", file=sys.stderr)
+    return 1
 
 
 def cmd_notify(args):
-    channel = (getattr(args, "channel", "slack") or "slack").lower()
-    url = getattr(args, "url", "")
+    channel = (get_arg(args, "channel", "slack")).lower()
+    url = get_arg(args, "url", "")
     alert = AlertPayload(
-        title=getattr(args, "title", "Enterprise Security Alert"),
-        severity=getattr(args, "severity", "HIGH"),
-        description=getattr(args, "description", "Automated alert dispatched from scanner CLI."),
-        cluster_id=getattr(args, "cluster", "production-fleet"),
-        namespace=getattr(args, "namespace", "default"),
-        workload_name=getattr(args, "workload", "demo-app"),
-        remediation=getattr(args, "remediation", "Drop Linux capabilities and set readOnlyRootFilesystem=true"),
+        title=get_arg(args, "title", "Enterprise Security Alert"),
+        severity=get_arg(args, "severity", "HIGH"),
+        description=get_arg(args, "description", "Automated alert dispatched from scanner CLI."),
+        cluster_id=get_arg(args, "cluster", "production-fleet"),
+        namespace=get_arg(args, "namespace", "default"),
+        workload_name=get_arg(args, "workload", "demo-app"),
+        remediation=get_arg(args, "remediation", "Drop Linux capabilities and set readOnlyRootFilesystem=true"),
     )
     if channel == "slack":
         ok = NotificationDispatcher.send_slack_alert(url, alert)
@@ -900,18 +931,19 @@ def cmd_notify(args):
 
 
 def cmd_fleet(args):
-    manager = FleetManager(tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant")
-    action = getattr(args, "action", "overview") or "overview"
+    tenant = get_arg(args, "tenant", "default-tenant")
+    manager = FleetManager(tenant_id=tenant)
+    action = get_arg(args, "action", "overview")
 
     if action == "register":
-        cid = getattr(args, "cluster_id", None) or f"cls-{int(time.time())}"
-        name = getattr(args, "name", None) or "production-cluster"
+        cid = get_arg(args, "cluster_id") or f"cls-{int(time.time())}"
+        name = get_arg(args, "name", "production-cluster")
         c = manager.register_cluster(
             cluster_id=cid,
             name=name,
-            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
-            cloud_provider=getattr(args, "provider", "aws") or "aws",
-            region=getattr(args, "region", "us-east-1") or "us-east-1",
+            tenant_id=tenant,
+            cloud_provider=get_arg(args, "provider", "aws"),
+            region=get_arg(args, "region", "us-east-1"),
         )
         print(f"[✓] Cluster registered successfully:")
         print(f"    ID       : {c.cluster_id}")
@@ -921,51 +953,57 @@ def cmd_fleet(args):
         return 0
 
     if action == "distribute":
-        res = manager.distribute_fleet_policy(getattr(args, "tenant", "default-tenant") or "default-tenant", "pol-default-zerotrust")
+        res = manager.distribute_fleet_policy(tenant, "pol-default-zerotrust")
         print(f"[✓] Fleet Zero-Trust Baseline policy distributed to {res['targets_count']} cluster(s).")
         return 0
 
-    # overview (default)
-    manager.register_cluster("eks-us-east-prod", "EKS US-East Prod", cloud_provider="aws", region="us-east-1")
-    manager.register_cluster("gke-eu-west-prod", "GKE EU-West Prod", cloud_provider="gcp", region="europe-west1")
+    if action == "overview":
+        manager.register_cluster("eks-us-east-prod", "EKS US-East Prod", cloud_provider="aws", region="us-east-1")
+        manager.register_cluster("gke-eu-west-prod", "GKE EU-West Prod", cloud_provider="gcp", region="europe-west1")
 
-    summary = manager.get_fleet_summary(getattr(args, "tenant", None))
-    print(f"\n[+] Global Fleet Security Overview:")
-    print(f"    Total Clusters       : {summary.total_clusters}")
-    print(f"    Active Reporting     : {summary.active_clusters}")
-    print(f"    Global Threat Index  : {summary.global_threat_index:.1f}/100.0 (Status: {'HEALTHY' if summary.global_threat_index < 30 else 'ALERT'})")
-    print(f"    Average Fleet Score  : {summary.average_security_score:.1f}%")
-    print(f"    Critical Deficits    : {summary.critical_findings_total}")
+        summary = manager.get_fleet_summary(get_arg(args, "tenant"))
+        print(f"\n[+] Global Fleet Security Overview:")
+        print(f"    Total Clusters       : {summary.total_clusters}")
+        print(f"    Active Reporting     : {summary.active_clusters}")
+        print(f"    Global Threat Index  : {summary.global_threat_index:.1f}/100.0 (Status: {'HEALTHY' if summary.global_threat_index < 30 else 'ALERT'})")
+        print(f"    Average Fleet Score  : {summary.average_security_score:.1f}%")
+        print(f"    Critical Deficits    : {summary.critical_findings_total}")
 
-    clusters = manager.list_clusters(getattr(args, "tenant", None))
-    print("-" * 80)
-    print(f"{'CLUSTER ID':<22} {'PROVIDER':<10} {'REGION':<15} {'SCORE':<8} {'THREAT':<8} {'STATUS'}")
-    print("-" * 80)
-    for c in clusters:
-        print(f"{c.cluster_id:<22} {c.cloud_provider.upper():<10} {c.region:<15} {c.security_score:<8.1f} {c.threat_index:<8.1f} {c.status}")
-    return 0
+        clusters = manager.list_clusters(get_arg(args, "tenant"))
+        print("-" * 80)
+        print(f"{'CLUSTER ID':<22} {'PROVIDER':<10} {'REGION':<15} {'SCORE':<8} {'THREAT':<8} {'STATUS'}")
+        print("-" * 80)
+        for c in clusters:
+            print(f"{c.cluster_id:<22} {c.cloud_provider.upper():<10} {c.region:<15} {c.security_score:<8.1f} {c.threat_index:<8.1f} {c.status}")
+        return 0
+
+    print(f"[!] Unrecognized fleet action: '{action}'. Valid actions: overview, register, distribute", file=sys.stderr)
+    return 1
 
 
 def cmd_auth(args):
-    auth_mgr = EnterpriseAuthManager(default_tenant=getattr(args, "tenant", "default-tenant") or "default-tenant")
-    action = getattr(args, "action", "token") or "token"
+    tenant = get_arg(args, "tenant", "default-tenant")
+    auth_mgr = EnterpriseAuthManager(default_tenant=tenant)
+    action = get_arg(args, "action", "token")
 
     if action == "token":
-        roles = [getattr(args, "role", ROLE_SECURITY_ENGINEER) or ROLE_SECURITY_ENGINEER]
+        roles = [get_arg(args, "role", ROLE_SECURITY_ENGINEER)]
+        subject = get_arg(args, "subject", "admin")
         token = auth_mgr.issue_jwt(
-            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
-            subject=getattr(args, "subject", "admin") or "admin",
+            tenant_id=tenant,
+            subject=subject,
             roles=roles,
         )
-        print(f"[✓] Bearer JWT Token Issued for subject '{getattr(args, 'subject', 'admin') or 'admin'}':")
+        print(f"[✓] Bearer JWT Token Issued for subject '{subject}':")
         print(token)
         return 0
 
     if action == "api-key":
-        roles = [getattr(args, "role", ROLE_PLATFORM_ADMIN) or ROLE_PLATFORM_ADMIN]
+        roles = [get_arg(args, "role", ROLE_PLATFORM_ADMIN)]
+        subject = get_arg(args, "subject", "service-account")
         key, rec = auth_mgr.generate_api_key(
-            tenant_id=getattr(args, "tenant", "default-tenant") or "default-tenant",
-            subject=getattr(args, "subject", "service-account") or "service-account",
+            tenant_id=tenant,
+            subject=subject,
             roles=roles,
         )
         print(f"[✓] Enterprise Cryptographic API Key Generated:")
@@ -975,7 +1013,8 @@ def cmd_auth(args):
         print(f"    Expires: {rec.expires_at}")
         return 0
 
-    return 0
+    print(f"[!] Unrecognized auth action: '{action}'. Valid actions: token, api-key", file=sys.stderr)
+    return 1
 
 
 def cmd_crd(args):
@@ -1261,6 +1300,11 @@ def main():
     p_notif.add_argument("--namespace", default="prod", help="Kubernetes namespace")
     p_notif.add_argument("--workload", default="backend-api", help="Kubernetes workload name")
 
+    # benchmark
+    p_bnch = subparsers.add_parser("benchmark", help="Run reproducible performance and latency micro-benchmarks")
+    p_bnch.add_argument("-n", "--iterations", type=int, default=300, help="Number of test iterations (default: 300)")
+    p_bnch.add_argument("--markdown", action="store_true", help="Print results formatted as a Markdown table")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1333,6 +1377,8 @@ def main():
         sys.exit(cmd_storage(args))
     elif args.command == "notify":
         sys.exit(cmd_notify(args))
+    elif args.command == "benchmark":
+        sys.exit(cmd_benchmark(args))
 
 
 if __name__ == "__main__":
