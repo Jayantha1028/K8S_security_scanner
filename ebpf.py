@@ -2,19 +2,23 @@
 """
 ebpf.py
 =======
-Native eBPF Kernel Telemetry Engine & Enterprise SIEM Forwarder.
+Kernel Security Event Classifier, Container Attribution & SIEM Telemetry Bridge.
 
-Capabilities:
-1. Kernel Tracepoint Telemetry: Analyzes process executions, file open operations, socket connects, and mounts.
-2. Container Cgroup Resolution: Maps kernel process IDs (PIDs) to Kubernetes Pod Name, Container ID, and Namespace.
-3. Behavioral Threat Detection:
-   - Suspicious shell or scanner execution in production pods (sh, bash, nc, nmap).
-   - Sensitive host file reads (/etc/shadow, /var/run/docker.sock, /etc/kubernetes/admin.conf).
-   - Privilege escalation and namespace breakout attempts via mount.
-4. Enterprise SIEM Exporters:
-   - ArcSight Common Event Format (CEF) for Splunk and Sentinel.
-   - IETF RFC 5424 Syslog formatter.
-   - Structured JSON stream.
+Architecture Note:
+In Linux environments, compiling and loading eBPF programs into the kernel requires
+elevated privileges (CAP_BPF / CAP_SYS_ADMIN), kernel headers, and bpf(2) syscall bindings.
+To maintain zero external binary dependencies and safe user-space execution, this module
+functions as a kernel security event classifier, cgroup resolver, and SIEM ingestion bridge:
+
+1. Evaluates raw kernel security events (execve, openat, mount) forwarded by host agents
+   (such as Falco, Cilium Tetragon, or an out-of-process BPF probe).
+2. Maps host process IDs (PIDs) and /proc/<pid>/cgroup hierarchies to Kubernetes Pod
+   Names, Container IDs, and Namespaces.
+3. Classifies behavioral intrusions against MITRE ATT&CK techniques (T1059.004, T1083, etc.).
+4. Normalizes alerts into enterprise SIEM formats (ArcSight Common Event Format CEF:0,
+   RFC 5424 Syslog, JSON).
+5. Provides reference compilable eBPF C source (get_native_ebpf_c_source()) using BPF
+   ring buffers and CO-RE for external probe compilation.
 """
 
 from dataclasses import asdict, dataclass, field

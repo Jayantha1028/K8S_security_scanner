@@ -78,19 +78,59 @@ class TestSigstoreVerifier(unittest.TestCase):
         self.assertTrue(details["is_slsa"])
         self.assertIsNone(err)
 
-    def test_verify_workload_image_signature(self):
+    def test_verify_workload_image_signature_with_annotations(self):
         res = self.verifier.verify_workload_image_signature(
             self.image_ref,
-            annotations={"cosign.sigstore.dev/certificate-identity": "sec-team@corp.internal"}
+            annotations={
+                "cosign.sigstore.dev/certificate-identity": "sec-team@corp.internal",
+                "cosign.sigstore.dev/predicate-type": "https://slsa.dev/provenance/v0.2",
+            }
         )
         self.assertTrue(res.verified)
         self.assertEqual(res.signer_identity, "sec-team@corp.internal")
         self.assertTrue(res.has_slsa_provenance)
 
+    def test_unsigned_digest_pinned_image_is_not_verified(self):
+        """CRITICAL: An image with a digest but NO signature or annotation must NOT be marked verified."""
+        res = self.verifier.verify_workload_image_signature(self.image_ref)
+        self.assertFalse(res.verified)
+        self.assertIsNone(res.signer_identity)
+        self.assertFalse(res.has_slsa_provenance)
+        self.assertIn("lacks verified Cosign signature", res.error_message)
+
     def test_unverified_image_without_digest(self):
         res = self.verifier.verify_workload_image_signature("nginx:1.21")
         self.assertFalse(res.verified)
         self.assertIn("lacks immutable sha256 digest", res.error_message)
+
+    def test_cryptographic_ecdsa_signature_verification(self):
+        """Tests authentic ECDSA P-256 signature verification over payload."""
+        try:
+            from cryptography.hazmat.primitives.asymmetric import ec
+            from cryptography.hazmat.primitives import hashes, serialization
+        except ImportError:
+            self.skipTest("cryptography not installed")
+
+        # Generate test ECDSA key pair
+        private_key = ec.generate_private_key(ec.SECP256R1())
+        pubkey_pem = private_key.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ).decode("utf-8")
+
+        payload = b'{"Critical":{"Identity":{"docker-reference":"test"},"Type":"cosign"}}'
+        signature = private_key.sign(payload, ec.ECDSA(hashes.SHA256()))
+
+        # Verify valid signature
+        valid, err = self.verifier.verify_cryptographic_signature(payload, signature, pubkey_pem)
+        self.assertTrue(valid)
+        self.assertIsNone(err)
+
+        # Verify tampered payload fails
+        tampered = b'{"Critical":{"Identity":{"docker-reference":"evil"},"Type":"cosign"}}'
+        valid_tampered, err_tampered = self.verifier.verify_cryptographic_signature(tampered, signature, pubkey_pem)
+        self.assertFalse(valid_tampered)
+        self.assertIn("signature mismatch", err_tampered)
 
 
 if __name__ == "__main__":

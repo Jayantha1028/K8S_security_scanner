@@ -6,7 +6,7 @@ Independent, High-Performance Kubernetes Security Scanner & Cloud-Native Securit
 Features:
 - Pure-Python Static AST manifest scanning across 56 vulnerability rules (V01-V56)
 - Helm chart and Kustomize overlay direct template rendering
-- Proprietary Cross-Resource Attack Path DAG & closed-form Blast Radius scoring
+- Cross-Resource Attack Path DAG & heuristic Blast Radius scoring
 - Cloud Provider IAM & ServiceAccount privilege correlation (AWS IRSA, GCP Workload Identity, Azure Entra)
 - Levenshtein supply chain typosquatting defense ($d \le 2$)
 - In-memory deep container layer unpacking, Go/Rust ELF symbol parsing

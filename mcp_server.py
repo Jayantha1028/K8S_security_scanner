@@ -67,7 +67,7 @@ class MCPServer:
             },
             {
                 "name": "k8s_analyze_attack_graph",
-                "description": "Computes cross-resource exploit kill-chains (Ingress -> Service -> Workload -> RBAC -> Host Kernel) and returns closed-form Blast Radius score.",
+                "description": "Computes cross-resource exploit kill-chains (Ingress -> Service -> Workload -> RBAC -> Host Kernel) and returns weighted Blast Radius score.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {

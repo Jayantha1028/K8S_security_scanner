@@ -20,6 +20,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+import yaml
 
 try:
     from .iac import DockerfileScanner, IaCScanReport
@@ -121,6 +122,21 @@ class ContainerLifecycleOrchestrator:
         target_image = image_ref or self._extract_image_from_manifest(str(p_manifest))
         workload_id = f"{manifest_report.manifest_path} ({target_image})"
 
+        manifest_annotations: Dict[str, str] = {}
+        try:
+            with open(p_manifest, "r", encoding="utf-8") as f:
+                docs = list(yaml.safe_load_all(f))
+                for d in docs:
+                    if isinstance(d, dict):
+                        anns = d.get("metadata", {}).get("annotations")
+                        if isinstance(anns, dict):
+                            manifest_annotations.update(anns)
+                        tpl_anns = d.get("spec", {}).get("template", {}).get("metadata", {}).get("annotations")
+                        if isinstance(tpl_anns, dict):
+                            manifest_annotations.update(tpl_anns)
+        except Exception:
+            pass
+
         phases: List[PhaseResult] = []
 
         # =========================================================================
@@ -164,7 +180,7 @@ class ContainerLifecycleOrchestrator:
         # =========================================================================
         # PHASE 2: ARTIFACT & SUPPLY CHAIN (Weight: 20%)
         # =========================================================================
-        sig_result = self.sigstore.verify_workload_image_signature(target_image)
+        sig_result = self.sigstore.verify_workload_image_signature(target_image, annotations=manifest_annotations)
         cve_list = lookup_image_cves(target_image)
         crit_cves = [c for c in cve_list if c.severity == "CRITICAL"]
 

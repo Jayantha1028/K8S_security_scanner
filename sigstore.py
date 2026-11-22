@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """
-native_scanner/sigstore.py
-==========================
-Cosign & Sigstore OCI Image Cryptographic Signature & Attestation Verifier.
-Provides pure-Python validation of:
-- Cosign OCI signature envelopes (sha256-<hash>.sig)
-- in-toto SLSA Provenance v0.2 / v1.0 Attestations (sha256-<hash>.att)
-- Immutable OCI digest matching & certificate identity pinning
-- Fulcio certificate chain & Rekor transparency log integration
+sigstore.py
+===========
+Cosign & Sigstore OCI Image Envelope & Cryptographic Signature Verifier.
+
+Capabilities:
+- Validates Cosign OCI signature payload envelopes (sha256-<hash>.sig)
+- Parses and validates in-toto SLSA Provenance v0.2 / v1.0 Attestations (sha256-<hash>.att)
+- Immutable OCI digest matching and workload annotation identity checking
+- Cryptographic ECDSA (P-256) and RSA signature verification against public keys
+  (requires Python 'cryptography' library)
+
+Note on Offline & Air-Gapped Environments:
+Full online Fulcio certificate authority validation and Rekor transparency log queries
+require live network connectivity. In air-gapped or CI pipeline environments, this module
+verifies offline Cosign envelopes, public key signatures, and cluster admission annotations.
 """
 
 import base64
@@ -16,7 +23,7 @@ import hashlib
 import json
 import logging
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 logger = logging.getLogger("NativeScanner.Sigstore")
 
@@ -39,7 +46,7 @@ class SignatureVerificationResult:
 
 class SigstoreVerifier:
     """
-    Validates container image signatures, SLSA provenance, and Cosign metadata.
+    Validates container image signatures, SLSA provenance envelopes, and Cosign metadata.
     """
 
     @staticmethod
@@ -105,6 +112,76 @@ class SigstoreVerifier:
 
         return True, None
 
+    def verify_cryptographic_signature(
+        self,
+        payload_bytes: bytes,
+        signature: Union[str, bytes],
+        public_key_pem: str,
+    ) -> Tuple[bool, Optional[str]]:
+        """
+        Performs genuine cryptographic signature verification of payload bytes
+        against an ECDSA or RSA public key in PEM format.
+        Supports standard Cosign ECDSA P-256 (SHA-256) and RSA signatures.
+        """
+        try:
+            from cryptography.hazmat.primitives import hashes
+            from cryptography.hazmat.primitives.asymmetric import ec, rsa, padding, utils
+            from cryptography.hazmat.primitives.serialization import load_pem_public_key
+            from cryptography.exceptions import InvalidSignature
+        except ImportError:
+            return False, "Cryptographic signature verification requires 'cryptography' library (pip install k8s-native-scanner[tls])"
+
+        # Decode signature if base64 string
+        if isinstance(signature, str):
+            try:
+                sig_bytes = base64.b64decode(signature)
+            except Exception as e:
+                return False, f"Failed to base64-decode signature: {str(e)}"
+        else:
+            sig_bytes = signature
+
+        try:
+            pubkey = load_pem_public_key(public_key_pem.encode("utf-8") if isinstance(public_key_pem, str) else public_key_pem)
+        except Exception as e:
+            return False, f"Invalid public key PEM: {str(e)}"
+
+        if isinstance(pubkey, ec.EllipticCurvePublicKey):
+            # Cosign generates either DER-encoded ECDSA signatures or raw (r || s, 64-bytes for P-256)
+            if len(sig_bytes) == 64:
+                r = int.from_bytes(sig_bytes[:32], "big")
+                s = int.from_bytes(sig_bytes[32:], "big")
+                der_sig = utils.encode_dss_signature(r, s)
+            else:
+                der_sig = sig_bytes
+
+            try:
+                pubkey.verify(der_sig, payload_bytes, ec.ECDSA(hashes.SHA256()))
+                return True, None
+            except InvalidSignature:
+                return False, "ECDSA cryptographic signature verification failed: signature mismatch"
+            except Exception as e:
+                return False, f"ECDSA verification error: {str(e)}"
+
+        elif isinstance(pubkey, rsa.RSAPublicKey):
+            try:
+                pubkey.verify(sig_bytes, payload_bytes, padding.PKCS1v15(), hashes.SHA256())
+                return True, None
+            except InvalidSignature:
+                try:
+                    pubkey.verify(
+                        sig_bytes,
+                        payload_bytes,
+                        padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
+                        hashes.SHA256(),
+                    )
+                    return True, None
+                except InvalidSignature:
+                    return False, "RSA cryptographic signature verification failed: signature mismatch"
+            except Exception as e:
+                return False, f"RSA verification error: {str(e)}"
+
+        return False, f"Unsupported public key type: {type(pubkey).__name__}"
+
     def verify_in_toto_attestation(
         self, attestation_payload: bytes, expected_digest: str
     ) -> Tuple[bool, Dict[str, Any], Optional[str]]:
@@ -155,9 +232,16 @@ class SigstoreVerifier:
         image_ref: str,
         annotations: Optional[Dict[str, str]] = None,
         mock_payload: Optional[bytes] = None,
+        signature: Optional[Union[str, bytes]] = None,
+        public_key_pem: Optional[str] = None,
     ) -> SignatureVerificationResult:
         """
         Performs holistic signature verification for a container image in a workload.
+        Validates:
+        1. Immutable sha256 digest reference (@sha256:...).
+        2. Cryptographic signature check if signature & public_key_pem are supplied.
+        3. Cosign envelope structure and digest alignment if payload is supplied.
+        4. Admission controller verified annotations or Fulcio certificate identity.
         """
         ann = annotations or {}
         digest = self.extract_image_digest(image_ref)
@@ -171,11 +255,45 @@ class SigstoreVerifier:
                 error_message="Image reference lacks immutable sha256 digest pinning (@sha256:...)",
             )
 
-        # 2. Check for Cosign annotations in manifest
-        cosign_identity = ann.get("cosign.sigstore.dev/certificate-identity") or ann.get("dev.cosignproject.cosign/subject")
-        cosign_issuer = ann.get("cosign.sigstore.dev/certificate-oidc-issuer")
+        # 2. Cryptographic signature verification if public key & signature supplied
+        if signature and public_key_pem:
+            payload_to_verify = mock_payload or digest.encode("utf-8")
+            valid_sig, sig_err = self.verify_cryptographic_signature(
+                payload_to_verify, signature, public_key_pem
+            )
+            if not valid_sig:
+                return SignatureVerificationResult(
+                    image=image_ref,
+                    verified=False,
+                    digest=digest,
+                    error_message=sig_err,
+                )
 
-        # If mock payload provided (testing or offline bundle)
+            # If payload was supplied, also verify envelope structure
+            if mock_payload:
+                valid_env, env_err = self.verify_cosign_payload(mock_payload, digest, expected_image=image_ref)
+                if not valid_env:
+                    return SignatureVerificationResult(
+                        image=image_ref,
+                        verified=False,
+                        digest=digest,
+                        error_message=env_err,
+                    )
+
+            return SignatureVerificationResult(
+                image=image_ref,
+                verified=True,
+                digest=digest,
+                signer_identity="cosign-cryptographic-key",
+                issuer="local-public-key",
+                has_slsa_provenance=False,
+                details={
+                    "verification_type": "cryptographic_key",
+                    "sig_tag": self.compute_cosign_sig_tag(digest),
+                },
+            )
+
+        # 3. If payload provided without public key (e.g. offline envelope check)
         if mock_payload:
             valid, err = self.verify_cosign_payload(mock_payload, digest, expected_image=image_ref)
             if not valid:
@@ -185,17 +303,58 @@ class SigstoreVerifier:
                     digest=digest,
                     error_message=err,
                 )
+            cosign_identity = ann.get("cosign.sigstore.dev/certificate-identity") or ann.get("dev.cosignproject.cosign/subject")
+            cosign_issuer = ann.get("cosign.sigstore.dev/certificate-oidc-issuer")
+            return SignatureVerificationResult(
+                image=image_ref,
+                verified=True,
+                digest=digest,
+                signer_identity=cosign_identity or "cosign-envelope-valid",
+                issuer=cosign_issuer or "cosign-envelope",
+                has_slsa_provenance=False,
+                details={
+                    "verification_type": "cosign_envelope_match",
+                    "sig_tag": self.compute_cosign_sig_tag(digest),
+                },
+            )
 
-        # Verified via immutable digest & signed attestation
+        # 4. Check for Cosign / Sigstore annotations in manifest (admission/CI attestation)
+        cosign_identity = ann.get("cosign.sigstore.dev/certificate-identity") or ann.get("dev.cosignproject.cosign/subject")
+        cosign_issuer = ann.get("cosign.sigstore.dev/certificate-oidc-issuer")
+        is_verified_ann = (
+            ann.get("cosign.sigstore.dev/verified") == "true"
+            or ann.get("sigstore.dev/verified") == "true"
+        )
+        predicate_type = ann.get("cosign.sigstore.dev/predicate-type", "")
+        has_slsa = "slsa.dev/provenance" in predicate_type or ann.get("slsa.dev/provenance") == "true"
+
+        if cosign_identity or is_verified_ann:
+            return SignatureVerificationResult(
+                image=image_ref,
+                verified=True,
+                digest=digest,
+                signer_identity=cosign_identity or "cosign-admission-verified",
+                issuer=cosign_issuer or "cosign-admission-attestation",
+                has_slsa_provenance=has_slsa,
+                slsa_build_type=predicate_type if has_slsa else None,
+                details={
+                    "verification_type": "admission_annotation",
+                    "sig_tag": self.compute_cosign_sig_tag(digest),
+                    "att_tag": self.compute_cosign_att_tag(digest),
+                },
+            )
+
+        # 5. Digest is pinned, but no signature envelope, key, or certificate identity was provided
         return SignatureVerificationResult(
             image=image_ref,
-            verified=True,
+            verified=False,
             digest=digest,
-            signer_identity=cosign_identity or "CN=sigstore.dev/verified",
-            issuer=cosign_issuer or "https://token.actions.githubusercontent.com",
-            has_slsa_provenance=True,
-            slsa_build_type="https://github.com/slsa-framework/slsa-github-generator",
+            signer_identity=None,
+            issuer=None,
+            has_slsa_provenance=False,
+            error_message="Image is pinned by digest, but lacks verified Cosign signature envelope or Fulcio certificate identity annotation",
             details={
+                "digest_pinned": True,
                 "sig_tag": self.compute_cosign_sig_tag(digest),
                 "att_tag": self.compute_cosign_att_tag(digest),
             },

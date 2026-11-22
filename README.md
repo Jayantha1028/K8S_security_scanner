@@ -223,7 +223,7 @@ Given this product verifies manifests, issues API keys, and signs tokens, crypto
    - Correlates decoupled YAML resources (`Ingress` $\to$ `Service` $\to$ `Workload` $\to$ `ServiceAccount` $\to$ `RBAC` $\to$ `Secret` / Host Kernel).
    - **NetworkPolicy Reachability Engine**: Evaluates active ingress/egress network segmentation rules, pruning or discounting lateral reachability edges.
    - Correlates Cloud Provider IAM Identities (**AWS IRSA**, **GCP Workload Identity**, **Azure Entra ID**).
-   - Calculates closed-form cluster-wide Blast Radius ($\mathcal{B} \in [0.0, 100.0]$).
+   - Calculates weighted cluster-wide Blast Radius ($\mathcal{B} \in [0.0, 100.0]$ based on crown-jewel exposure and hop-distance decay).
    - Exports interactive Mermaid DAGs and exploit kill-chains.
 
 3. **In-Cluster Admission Controller Webhook (`/validate` & `/mutate`)**:

@@ -11,9 +11,9 @@ Patented / Novel Capabilities:
 2. Multi-Hop Kill-Chain Traversal:
    Traces end-to-end exploit trajectories from external entrypoints (NodePort / Ingress)
    to high-value crown jewels (Cluster-Admin, Secret data, Node root access).
-3. Mathematical Blast Radius Index (B in [0.0, 100.0]):
-   Computes a closed-form topology score combining reachability, credential access,
-   and breakout severity.
+3. Heuristic Blast Radius Index (B in [0.0, 100.0]):
+   Computes a weighted topology score combining reachability, credential access,
+   hop-distance decay, and breakout severity.
 4. Native Mermaid Diagram Synthesis:
    Outputs visual graph representations for SecOps threat modeling.
 """
