@@ -18,7 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Kubernetes Native Security Team",
     python_requires=">=3.9",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests*"]),
     py_modules=[
         "scanner",
         "attack_graph",

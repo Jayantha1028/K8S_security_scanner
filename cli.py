@@ -290,9 +290,15 @@ def cmd_remediate(args):
         print("\nUnified Hardening Diff:")
         print(format_patch_diff(content, remediated, str(target)))
 
-    out_path = Path(args.output) if args.output else target
-    out_path.write_text(remediated, encoding="utf-8")
-    print(f"[✓] Remediated manifest saved to: {out_path}")
+    if getattr(args, "output", None):
+        out_path = Path(args.output)
+        out_path.write_text(remediated, encoding="utf-8")
+        print(f"[✓] Remediated manifest saved to: {out_path}")
+    elif getattr(args, "write", False):
+        target.write_text(remediated, encoding="utf-8")
+        print(f"[✓] In-place remediation written to: {target}")
+    else:
+        print(f"\n[ℹ] Dry-run preview complete. Use -w/--write to apply changes in-place or -o <file> to export.")
     return 0
 
 

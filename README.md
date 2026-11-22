@@ -67,6 +67,128 @@ python3 cli.py benchmark --markdown
 
 ---
 
+## 📋 Real Scan & Remediation Outputs
+
+### 1. Terminal AST Scan Finding Output
+Running `k8s-native-scan scan examples/insecure-workload.yaml`:
+```text
+[*] Scanning manifest: examples/insecure-workload.yaml...
+
+[+] Workload: examples/insecure-workload.yaml
+    Compliance Score: 16.2/100 (High Risk)
+    Blast Radius Index: 82.5/100
+    Total Findings: 16
+
+Findings Detail:
+  [HIGH    ] V09: Host Network Namespace Sharing (hostNetwork: true) - Set hostNetwork: false
+  [CRITICAL] V44: Cloud Metadata Service (IMDSv1) Accessible to Pods - Enforce IMDSv2 with hop limit 1 and block link-local metadata via NetworkPolicy
+  [CRITICAL] V10: Host PID Namespace Sharing (hostPID: true) - Set hostPID: false
+  [MEDIUM  ] V23: Unnecessary Service Account Token Auto-Mount - Set automountServiceAccountToken: false
+  [CRITICAL] V01: Privileged Container Execution - Remove privileged: true
+  [HIGH    ] V03: Privilege Escalation Allowed - Set securityContext.allowPrivilegeEscalation: false
+  [HIGH    ] V02: Root User Execution (UID 0) - Set securityContext.runAsNonRoot: true and runAsUser >= 1000
+  [MEDIUM  ] V04: Writable Root Filesystem - Set securityContext.readOnlyRootFilesystem: true
+  [MEDIUM  ] V08: Capabilities Not Dropped (Missing drop: ALL) - Set securityContext.capabilities.drop: ['ALL']
+  [CRITICAL] V05: Dangerous Capability CAP_SYS_ADMIN Added - Remove CAP_SYS_ADMIN from capabilities.add
+  [MEDIUM  ] V12: Missing Seccomp Profile - Set seccompProfile.type: RuntimeDefault
+  [LOW     ] V13: Missing CPU Resource Limit - Set resources.limits.cpu
+  [MEDIUM  ] V14: Missing Memory Resource Limit - Set resources.limits.memory
+  [MEDIUM  ] V15: Floating or Untagged Image Tag (:latest) - Pin container image to an immutable tag or SHA256 digest
+  [MEDIUM  ] V21: Risky ImagePullPolicy (IfNotPresent with mutable tags) - Set imagePullPolicy: Always when using mutable tags
+  [HIGH    ] V31: Missing Default-Deny Ingress NetworkPolicy - Apply default-deny NetworkPolicy restricting ingress and egress
+```
+
+### 2. Unified Auto-Remediation Patch Diff
+Running `k8s-native-scan remediate examples/insecure-workload.yaml --diff`:
+```diff
+--- original/examples/insecure-workload.yaml
++++ remediated/examples/insecure-workload.yaml
+@@ -6,15 +6,38 @@
+   labels:
+     app: insecure-api
+ spec:
+-  hostNetwork: true
+-  hostPID: true
+   containers:
+   - name: web
+     image: nginx:latest
+     securityContext:
+-      privileged: true
+-      allowPrivilegeEscalation: true
+-      readOnlyRootFilesystem: false
++      privileged: false
++      allowPrivilegeEscalation: false
++      readOnlyRootFilesystem: true
+       capabilities:
+-        add: ["SYS_ADMIN"]
++        drop:
++        - ALL
++    resources:
++      limits:
++        cpu: 250m
++        memory: 128Mi
++      requests:
++        cpu: 50m
++        memory: 64Mi
++  securityContext:
++    runAsNonRoot: true
++    runAsUser: 10001
++    runAsGroup: 10001
++    seccompProfile:
++      type: RuntimeDefault
+```
+
+### 3. Industry Regulatory Compliance Certificate
+Running `k8s-native-scan compliance examples/insecure-workload.yaml`:
+```text
+# Formal Regulatory Compliance Audit Certificate
+Overall Compliance Score: 4.2% | Certification Status: FAIL
+
+| Regulatory Framework | Standards Authority | Score | Status | Passed Controls |
+| :--- | :--- | :---: | :---: | :---: |
+| PCI-DSS-v4.0 | Payment Card Industry Data Security Standard v4.0 | 25.0% | ❌ NON_COMPLIANT | 1 / 4 |
+| SOC-2-Type-II | AICPA SOC 2 Type II Security Criteria | 0.0% | ❌ NON_COMPLIANT | 0 / 4 |
+| HIPAA-Security-Rule | HIPAA Security Rule (45 CFR § 164.312) | 0.0% | ❌ NON_COMPLIANT | 0 / 3 |
+| ISO-27001-2022 | ISO/IEC 27001:2022 Information Security Management | 0.0% | ❌ NON_COMPLIANT | 0 / 4 |
+| NIST-SP-800-190 | NIST SP 800-190 Application Container Security Guide | 0.0% | ❌ NON_COMPLIANT | 0 / 3 |
+| Well-Architected-Framework | Cloud-Native Well-Architected Framework | 0.0% | ❌ NON_COMPLIANT | 0 / 5 |
+```
+
+### 4. Native SARIF v2.1.0 Excerpt (`--sarif`)
+Directly integrates into GitHub Advanced Security Code Scanning:
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "k8s-native-scanner",
+          "rules": [
+            {
+              "id": "V01",
+              "shortDescription": { "text": "Privileged Container Execution" },
+              "defaultConfiguration": { "level": "error" }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "V01",
+          "level": "error",
+          "message": { "text": "Container 'web' runs with privileged: true, allowing complete host takeover." },
+          "locations": [{ "physicalLocation": { "artifactLocation": { "uri": "examples/insecure-workload.yaml" } } }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
 ## 🔒 Cryptographic Primitives & Security Audit
 
 Given this product verifies manifests, issues API keys, and signs tokens, cryptographic logic adheres to vetted principles:
@@ -139,14 +261,36 @@ Given this product verifies manifests, issues API keys, and signs tokens, crypto
 ### 1. Installation
 
 ```bash
-# Editable install
+# Pure-Python core install (zero external binaries)
 pip install -e .
+
+# Optional extras: [tls] for self-signed certificates, [all] for development and testing
+pip install -e ".[all]"
 
 # Or run directly via wrapper
 ./bin/k8s-native-scan --help
 ```
 
-### 2. Manifest Scanning & Security Gates
+### 2. Programmatic Python API
+
+The scanner can be imported and integrated directly into Python pipelines and frameworks:
+
+```python
+from k8s_scanner.core import NativeSecurityScanner, AttackGraphEngine, auto_remediate_manifest
+
+# Initialize zero-dependency scanner
+scanner = NativeSecurityScanner()
+report = scanner.scan_yaml_content(open("examples/insecure-workload.yaml").read())
+print(f"Compliance Score: {report.compliance_score}/100")
+for finding in report.findings:
+    print(f"  [{finding.severity}] {finding.rule_id}: {finding.title}")
+
+# Automated least-privilege remediation
+remediated_yaml, fixes = auto_remediate_manifest(open("examples/insecure-workload.yaml").read())
+print(f"Applied {len(fixes)} hardening patches.")
+```
+
+### 3. Manifest Scanning & Security Gates
 
 ```bash
 # Scan a single manifest
