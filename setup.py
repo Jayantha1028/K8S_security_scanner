@@ -66,6 +66,8 @@ setup(
     extras_require={
         "dev": ["pytest>=7.0", "coverage>=7.0"],
         "tls": ["cryptography>=3.4.0"],
+        "k8s": ["kubernetes>=24.0.0"],
+        "all": ["cryptography>=3.4.0", "kubernetes>=24.0.0", "pytest>=7.0", "coverage>=7.0"],
     },
     entry_points={
         "console_scripts": [

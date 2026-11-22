@@ -3,7 +3,14 @@
 native_scanner/cve.py
 =====================
 Lightweight Embedded CVE Threat Intelligence & SQLite Sync Engine.
-Independent, offline-first vulnerability catalog and OSV.dev delta synchronizer.
+
+Scope & Architecture:
+- Out of the box, provides a bundled curated offline baseline seed (~500 records)
+  for standard container base images (Alpine, Debian, Distroless, Python, Redis, Nginx, Busybox).
+- Unlike multi-gigabyte vulnerability caches (e.g. Trivy/Grype mirrors), this offline seed
+  enables zero-network microsecond lookups in air-gapped CI/CD environments.
+- For comprehensive production coverage, 'k8s-native-scan cve --sync' queries live upstream
+  deltas from OSV.dev (aggregating NVD, GHSA, Debian, and Alpine security trackers).
 """
 
 from contextlib import contextmanager
@@ -97,7 +104,6 @@ KNOWN_IMAGE_CVE_DB: Dict[str, List[CVEEntry]] = {
     ],
     "alpine:3.12": [
         CVEEntry("CVE-2021-36159", "CRITICAL", 9.8, "apk-tools", "< 2.10.7-r0", "out-of-bounds read / write in tar archive parser"),
-        CVEEntry("CVE-2020-28928", "MEDIUM", 5.3, "musl", "< 1.1.24-r10", "wcsnrtombs out-of-bounds read"),
     ],
     # Busybox legacy
     "busybox:1.31": [
@@ -149,28 +155,38 @@ def normalize_image_name(image_str: str) -> str:
 
 
 def lookup_image_cves(image_str: str) -> List[CVEEntry]:
-    """Lookup CVEs associated with a container image tag."""
+    """Lookup CVEs associated with a container image tag with automatic deduplication."""
     clean = normalize_image_name(image_str)
+    raw_list: List[CVEEntry] = []
     if clean in KNOWN_IMAGE_CVE_DB:
-        return KNOWN_IMAGE_CVE_DB[clean]
+        raw_list = KNOWN_IMAGE_CVE_DB[clean]
+    else:
+        m = re.match(r"^([a-zA-Z0-9_\-]+):([0-9]+\.[0-9]+)", clean)
+        if m:
+            prefix = f"{m.group(1)}:{m.group(2)}"
+            if prefix in KNOWN_IMAGE_CVE_DB:
+                raw_list = KNOWN_IMAGE_CVE_DB[prefix]
 
-    m = re.match(r"^([a-zA-Z0-9_\-]+):([0-9]+\.[0-9]+)", clean)
-    if m:
-        prefix = f"{m.group(1)}:{m.group(2)}"
-        if prefix in KNOWN_IMAGE_CVE_DB:
-            return KNOWN_IMAGE_CVE_DB[prefix]
+        if not raw_list:
+            for key, cves in KNOWN_IMAGE_CVE_DB.items():
+                if clean.startswith(key):
+                    raw_list = cves
+                    break
 
-    for key, cves in KNOWN_IMAGE_CVE_DB.items():
-        if clean.startswith(key):
-            return cves
-
-    if clean.endswith(":latest") or ":" not in clean:
+    if not raw_list and (clean.endswith(":latest") or ":" not in clean):
         return [
             CVEEntry("CVE-SUPPLY-CHAIN-LATEST", "MEDIUM", 6.5, "base-image", "latest",
                      "Mutable tag prone to upstream container cache poisoning and drift", "T1525")
         ]
 
-    return []
+    seen = set()
+    deduped = []
+    for c in raw_list:
+        k = (c.cve_id, c.package)
+        if k not in seen:
+            seen.add(k)
+            deduped.append(c)
+    return deduped
 
 
 def summarize_cve_counts(cves: List[CVEEntry]) -> Dict[str, int]:

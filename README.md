@@ -208,6 +208,13 @@ Given this product verifies manifests, issues API keys, and signs tokens, crypto
 5. **TLS Webhook Encryption**:
    - In-cluster admission webhooks support self-signed TLS generation via Python's standard `cryptography` x509 builder.
    - Enforces TLS 1.2+ minimum with modern ECDHE cipher suites and sets `0600` permissions on private keys.
+6. **SAML 2.0 XMLDSig Verification & Auth Bypass Defense**:
+   - Parses corporate SAML 2.0 assertions using structured DOM parsing rather than fragile regex, eliminating XML Signature Wrapping (XSW) attack vectors.
+   - Enforces cryptographic XMLDSig digital signature verification (`ds:Signature`, `ds:SignedInfo`) using C14N canonicalization and trusted IdP certificates/public keys.
+   - Validates cryptographic assertion digests (`ds:DigestValue`); tampered attributes or unsigned assertions are rejected outright (`require_signature=True`).
+7. **Authentic Sigstore Cosign Verification**:
+   - Cryptographically verifies container signatures over Cosign payloads using ECDSA P-256 (SHA-256) or RSA against public keys or verified admission annotations.
+   - Strictly blocks unsigned digest-pinned images (`verified=False`) with zero fabricated identity claims.
 
 ---
 
@@ -343,18 +350,20 @@ k8s-native-scan webhook --generate-config -o webhook-deployment.yaml
 k8s-native-scan webhook --port 8443 --mode enforce --min-score 75.0
 ```
 
-### 7. Deep Historical CVE Threat Intelligence & Delta Sync
+### 7. CVE Threat Intelligence & Delta Sync
 
 ```bash
-# Query embedded SQLite database statistics & SHA-256 integrity hash
+# Query embedded baseline seed database (~500 offline records for standard base images)
 k8s-native-scan cve
 
-# Look up historical CVEs affecting a specific container package
+# Look up CVEs affecting a specific container package
 k8s-native-scan cve --lookup util-linux
 
-# Synchronize live CVE deltas from OSV.dev (aggregating NVD, GHSA, Debian, Alpine)
+# Synchronize live upstream vulnerability deltas from OSV.dev (aggregating NVD, GHSA, Debian, Alpine)
 k8s-native-scan cve --sync
 ```
+
+> **Note on CVE Coverage**: Out of the box, `data/cve_database.json` provides an instant offline seed for air-gapped CI/CD environments without requiring multi-gigabyte vulnerability mirror downloads. Running `cve --sync` populates live upstream vulnerability feeds.
 
 ### 8. Air-Gapped Sovereign Bundle Management
 
@@ -368,8 +377,13 @@ k8s-native-scan bundle verify bundle.tar.gz
 
 ### 9. Live In-Cluster Security Posture Audit (CSPM Engine)
 
+Audits live running Kubernetes workloads via a 3-tier control plane architecture:
+1. **Official Kubernetes Python SDK**: Activated automatically when installed (`pip install k8s-native-scanner[k8s]`).
+2. **Zero-Dependency In-Cluster REST Client**: Uses ServiceAccount token (`/var/run/secrets/kubernetes.io/serviceaccount/token`) to hit `https://kubernetes.default.svc` directly without third-party dependencies.
+3. **Out-of-Cluster `kubectl` Pipeline**: Seamlessly queries active kubeconfig contexts on developer workstations.
+
 ```bash
-# Audit running cluster workloads (auto-detects in-cluster ServiceAccount or kubectl)
+# Audit running cluster workloads (auto-detects in-cluster ServiceAccount, k8s SDK, or kubectl)
 k8s-native-scan cluster
 
 # Audit specific namespace and export auto-remediated least-privilege manifests

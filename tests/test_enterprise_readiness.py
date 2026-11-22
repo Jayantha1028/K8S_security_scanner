@@ -113,7 +113,7 @@ class TestEnterpriseAuth(unittest.TestCase):
             </saml2:AttributeStatement>
         </saml2:Assertion>"""
 
-        identity = self.auth.parse_saml_assertion(saml_xml, tenant_id="corp-tenant")
+        identity = self.auth.parse_saml_assertion(saml_xml, tenant_id="corp-tenant", require_signature=False)
         self.assertIsNotNone(identity)
         self.assertEqual(identity.subject, "sec-auditor@enterprise.com")
         self.assertIn(ROLE_PLATFORM_ADMIN, identity.roles)

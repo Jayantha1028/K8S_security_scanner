@@ -40,6 +40,14 @@ except ImportError:
     from scanner import NativeSecurityScanner, ScanReport
     from remediate import remediate_workload_dict
 
+# Optional integration with official Kubernetes Python SDK
+try:
+    import kubernetes
+    from kubernetes import client as k8s_client, config as k8s_config
+    HAS_K8S_CLIENT = True
+except ImportError:
+    HAS_K8S_CLIENT = False
+
 logger = logging.getLogger("NativeScanner.ClusterScanner")
 
 
@@ -151,6 +159,45 @@ class LiveClusterScanner:
         except Exception:
             return False
 
+    def _fetch_via_k8s_client(self, namespace: Optional[str] = None) -> Optional[List[Dict[str, Any]]]:
+        """Queries live workloads using official kubernetes Python SDK when installed."""
+        if not HAS_K8S_CLIENT:
+            return None
+        try:
+            if Path("/var/run/secrets/kubernetes.io/serviceaccount/token").exists():
+                k8s_config.load_incluster_config()
+            elif self.kubeconfig:
+                k8s_config.load_kube_config(config_file=self.kubeconfig)
+            else:
+                k8s_config.load_kube_config()
+        except Exception as e:
+            logger.debug(f"Official kubernetes SDK config load skipped: {e}")
+            return None
+
+        try:
+            core_v1 = k8s_client.CoreV1Api()
+            apps_v1 = k8s_client.AppsV1Api()
+            api_client = k8s_client.ApiClient()
+
+            raw_items = []
+            if namespace:
+                raw_items.extend(core_v1.list_namespaced_pod(namespace).items)
+                raw_items.extend(apps_v1.list_namespaced_deployment(namespace).items)
+                raw_items.extend(apps_v1.list_namespaced_daemon_set(namespace).items)
+                raw_items.extend(apps_v1.list_namespaced_stateful_set(namespace).items)
+            else:
+                raw_items.extend(core_v1.list_pod_for_all_namespaces().items)
+                raw_items.extend(apps_v1.list_deployment_for_all_namespaces().items)
+                raw_items.extend(apps_v1.list_daemon_set_for_all_namespaces().items)
+                raw_items.extend(apps_v1.list_stateful_set_for_all_namespaces().items)
+
+            items = [api_client.sanitize_for_serialization(item) for item in raw_items]
+            logger.info(f"Retrieved {len(items)} live workloads via official kubernetes Python SDK.")
+            return items
+        except Exception as e:
+            logger.warning(f"Official kubernetes SDK query failed, falling back: {e}")
+            return None
+
     def _fetch_in_cluster(self, path: str) -> Optional[Dict[str, Any]]:
         """Zero-dependency in-cluster API query using ServiceAccount credentials."""
         token_path = Path("/var/run/secrets/kubernetes.io/serviceaccount/token")
@@ -180,8 +227,13 @@ class LiveClusterScanner:
         """Fetch live Kubernetes objects from kube-apiserver."""
         target_resources = resources or ["pods", "deployments", "daemonsets", "statefulsets", "jobs", "cronjobs"]
 
-        # 1. Check in-cluster serviceaccount first if kubectl is not installed
-        if not self.has_kubectl and Path("/var/run/secrets/kubernetes.io/serviceaccount/token").exists():
+        # 1. Try official Kubernetes Python SDK client if installed
+        sdk_items = self._fetch_via_k8s_client(namespace=namespace)
+        if sdk_items is not None and len(sdk_items) > 0:
+            return sdk_items
+
+        # 2. In-cluster ServiceAccount REST query (zero external Python dependencies)
+        if Path("/var/run/secrets/kubernetes.io/serviceaccount/token").exists():
             items = []
             ns_prefix = f"/namespaces/{namespace}" if namespace else ""
             endpoints = [
@@ -196,11 +248,12 @@ class LiveClusterScanner:
                 data = self._fetch_in_cluster(ep)
                 if data and "items" in data:
                     items.extend(data["items"])
-            return items
+            if items:
+                return items
 
-        # 2. Out-of-cluster kubectl fetch
+        # 3. Out-of-cluster kubectl fetch fallback
         if not self.has_kubectl:
-            logger.error("Neither kubectl nor in-cluster ServiceAccount token is available.")
+            logger.error("Neither official kubernetes SDK, in-cluster ServiceAccount, nor kubectl is available.")
             return []
 
         res_str = ",".join(target_resources)

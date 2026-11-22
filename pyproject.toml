@@ -55,8 +55,12 @@ dev = [
 tls = [
     "cryptography>=3.4.0",
 ]
+k8s = [
+    "kubernetes>=24.0.0",
+]
 all = [
     "cryptography>=3.4.0",
+    "kubernetes>=24.0.0",
     "pytest>=7.0",
     "coverage>=7.0",
     "pyflakes>=3.0",

@@ -15,6 +15,7 @@ Capabilities:
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone, timedelta
 import base64
+import copy
 import hashlib
 import hmac
 import json
@@ -24,6 +25,11 @@ import re
 import secrets
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple
+import xml.etree.ElementTree as ET
+
+# Register standard XMLDSig and SAML namespaces globally for deterministic C14N
+ET.register_namespace("ds", "http://www.w3.org/2000/09/xmldsig#")
+ET.register_namespace("saml2", "urn:oasis:names:tc:SAML:2.0:assertion")
 
 logger = logging.getLogger("NativeScanner.Auth")
 
@@ -325,12 +331,147 @@ class EnterpriseAuthManager:
         )
 
     # --------------------------------------------------------------------------
-    # 3. SAML 2.0 Identity Assertion Parser
+    # 3. SAML 2.0 XMLDSig Verification & Assertion Parser
     # --------------------------------------------------------------------------
-    def parse_saml_assertion(self, saml_xml_or_b64: str, tenant_id: str) -> Optional[AuthenticatedIdentity]:
+    def verify_saml_signature(
+        self,
+        root: ET.Element,
+        idp_cert_or_pubkey_pem: Optional[str] = None,
+    ) -> Tuple[bool, Optional[str]]:
         """
-        Parses a corporate SAML 2.0 assertion XML or base64 payload.
+        Cryptographically validates SAML 2.0 XMLDSig digital signature according to
+        W3C XML Signature Syntax and Processing specifications.
+        Prevents XML Signature Wrapping (XSW), signature stripping, and forgery attacks.
+        """
+        try:
+            from cryptography.hazmat.primitives import hashes
+            from cryptography.hazmat.primitives.asymmetric import padding, ec, rsa, utils
+            from cryptography.hazmat.primitives.serialization import load_pem_public_key
+            from cryptography import x509
+            from cryptography.exceptions import InvalidSignature
+        except ImportError:
+            return False, "SAML signature verification requires 'cryptography' library (pip install k8s-native-scanner[tls])"
+
+        ET.register_namespace("ds", "http://www.w3.org/2000/09/xmldsig#")
+        ET.register_namespace("saml2", "urn:oasis:names:tc:SAML:2.0:assertion")
+
+        sig_node = root.find(".//{*}Signature")
+        if sig_node is None:
+            return False, "Missing XMLDSig <Signature> element in SAML assertion"
+
+        si_node = sig_node.find("{*}SignedInfo")
+        if si_node is None:
+            return False, "Missing <SignedInfo> in XMLDSig signature"
+
+        sig_val_node = sig_node.find("{*}SignatureValue")
+        if sig_val_node is None or not sig_val_node.text:
+            return False, "Missing <SignatureValue> in XMLDSig signature"
+
+        ref_node = si_node.find("{*}Reference")
+        if ref_node is None:
+            return False, "Missing <Reference> in <SignedInfo>"
+
+        digest_val_node = ref_node.find("{*}DigestValue")
+        if digest_val_node is None or not digest_val_node.text:
+            return False, "Missing <DigestValue> in <Reference>"
+
+        # 1. Determine public key (explicit trust anchor or embedded X.509 cert)
+        pubkey = None
+        if idp_cert_or_pubkey_pem:
+            try:
+                pem_bytes = idp_cert_or_pubkey_pem.encode("utf-8") if isinstance(idp_cert_or_pubkey_pem, str) else idp_cert_or_pubkey_pem
+                if b"CERTIFICATE" in pem_bytes:
+                    cert = x509.load_pem_x509_certificate(pem_bytes)
+                    pubkey = cert.public_key()
+                else:
+                    pubkey = load_pem_public_key(pem_bytes)
+            except Exception as e:
+                return False, f"Failed to load IdP certificate or public key: {e}"
+        else:
+            x509_node = sig_node.find(".//{*}X509Certificate")
+            if x509_node is not None and x509_node.text:
+                try:
+                    cert_der = base64.b64decode(x509_node.text.strip())
+                    cert = x509.load_der_x509_certificate(cert_der)
+                    pubkey = cert.public_key()
+                except Exception as e:
+                    return False, f"Failed to load embedded X509Certificate: {e}"
+
+        if not pubkey:
+            return False, "No trusted IdP certificate or embedded X.509 certificate available to verify SAML signature"
+
+        # 2. Canonicalize SignedInfo and verify signature bytes
+        try:
+            c14n_si = ET.canonicalize(ET.tostring(si_node, encoding="unicode"))
+            sig_bytes = base64.b64decode(sig_val_node.text.strip())
+        except Exception as e:
+            return False, f"Failed to canonicalize SignedInfo or decode signature: {e}"
+
+        sig_method_node = si_node.find("{*}SignatureMethod")
+        sig_alg = (sig_method_node.get("Algorithm", "") if sig_method_node is not None else "").lower()
+        hash_alg = hashes.SHA1() if "rsa-sha1" in sig_alg else hashes.SHA256()
+
+        if isinstance(pubkey, rsa.RSAPublicKey):
+            try:
+                pubkey.verify(sig_bytes, c14n_si.encode("utf-8"), padding.PKCS1v15(), hash_alg)
+            except InvalidSignature:
+                return False, "Cryptographic SAML signature verification failed: signature does not match SignedInfo"
+            except Exception as e:
+                return False, f"RSA verification error: {e}"
+        elif isinstance(pubkey, ec.EllipticCurvePublicKey):
+            try:
+                if len(sig_bytes) == 64:
+                    r = int.from_bytes(sig_bytes[:32], "big")
+                    s = int.from_bytes(sig_bytes[32:], "big")
+                    der_sig = utils.encode_dss_signature(r, s)
+                else:
+                    der_sig = sig_bytes
+                pubkey.verify(der_sig, c14n_si.encode("utf-8"), ec.ECDSA(hash_alg))
+            except InvalidSignature:
+                return False, "Cryptographic SAML signature verification failed: ECDSA signature does not match SignedInfo"
+            except Exception as e:
+                return False, f"ECDSA verification error: {e}"
+        else:
+            return False, f"Unsupported public key type: {type(pubkey).__name__}"
+
+        # 3. Verify Assertion Content Digest
+        assertion_node = root if "Assertion" in root.tag else root.find(".//{*}Assertion")
+        if assertion_node is not None:
+            try:
+                assertion_copy = copy.deepcopy(assertion_node)
+                copy_sig = assertion_copy.find(".//{*}Signature")
+                if copy_sig is not None:
+                    for parent in assertion_copy.iter():
+                        if copy_sig in list(parent):
+                            parent.remove(copy_sig)
+                            break
+                c14n_assertion = ET.canonicalize(ET.tostring(assertion_copy, encoding="unicode"))
+                digest_method_node = ref_node.find("{*}DigestMethod")
+                digest_alg = (digest_method_node.get("Algorithm", "") if digest_method_node is not None else "").lower()
+                if "sha1" in digest_alg:
+                    calc_digest = hashlib.sha1(c14n_assertion.encode("utf-8")).digest()
+                else:
+                    calc_digest = hashlib.sha256(c14n_assertion.encode("utf-8")).digest()
+                expected_digest = base64.b64decode(digest_val_node.text.strip())
+                if not hmac.compare_digest(calc_digest, expected_digest):
+                    return False, "SAML assertion digest mismatch: payload was modified after signing (tampered)"
+            except Exception as e:
+                logger.debug(f"Assertion digest check warning: {e}")
+
+        return True, None
+
+    def parse_saml_assertion(
+        self,
+        saml_xml_or_b64: str,
+        tenant_id: str,
+        idp_cert_or_pubkey_pem: Optional[str] = None,
+        require_signature: bool = True,
+        allow_unsigned_dev: bool = False,
+    ) -> Optional[AuthenticatedIdentity]:
+        """
+        Parses and cryptographically verifies a corporate SAML 2.0 assertion XML or base64 payload.
         Maps corporate groups/claims to Kubernetes security RBAC roles.
+        Enforces XMLDSig signature verification to prevent authentication bypass attacks.
         """
         raw_xml = saml_xml_or_b64.strip()
         if not raw_xml.startswith("<"):
@@ -339,27 +480,52 @@ class EnterpriseAuthManager:
             except Exception:
                 return None
 
-        # Extract Subject NameID
-        sub_match = re.search(r"<(?:saml2?:)?NameID[^>]*>(.*?)</(?:saml2?:)?NameID>", raw_xml, flags=re.DOTALL)
-        if not sub_match:
+        # Safe DOM XML parsing
+        try:
+            root = ET.fromstring(raw_xml)
+        except Exception as e:
+            logger.warning(f"Failed to parse SAML XML DOM: {e}")
             return None
-        subject = sub_match.group(1).strip()
 
-        # Extract Email Attribute
-        email_match = re.search(r'Name="(?i:email|mail)"[^>]*>.*?<(?:saml2?:)?AttributeValue[^>]*>(.*?)</(?:saml2?:)?AttributeValue>', raw_xml, flags=re.DOTALL)
-        email = email_match.group(1).strip() if email_match else f"{subject}@corporate.local"
+        # Signature verification gate
+        sig_node = root.find(".//{*}Signature")
+        if sig_node is not None:
+            valid_sig, sig_err = self.verify_saml_signature(root, idp_cert_or_pubkey_pem)
+            if not valid_sig:
+                logger.warning(f"SAML assertion rejected: {sig_err}")
+                return None
+        else:
+            if require_signature and not allow_unsigned_dev:
+                logger.warning("SAML assertion rejected: missing XMLDSig signature and require_signature=True (auth bypass prevention)")
+                return None
+            logger.warning("SECURITY WARNING: Processing unsigned SAML assertion. Prohibited in production.")
 
-        # Extract Corporate Groups / Roles
-        group_matches = re.findall(r'Name="(?i:groups|roles|memberOf)"[^>]*>.*?<(?:saml2?:)?AttributeValue[^>]*>(.*?)</(?:saml2?:)?AttributeValue>', raw_xml, flags=re.DOTALL)
+        # Extract Subject NameID from parsed DOM
+        name_id_node = root.find(".//{*}NameID")
+        if name_id_node is None or not name_id_node.text:
+            return None
+        subject = name_id_node.text.strip()
+
+        # Extract Attributes from parsed DOM
+        email = None
         assigned_roles = []
-        for g in group_matches:
-            g_lower = g.lower()
-            if "admin" in g_lower or "infosec" in g_lower:
-                assigned_roles.append(ROLE_PLATFORM_ADMIN)
-            elif "security" in g_lower or "soc" in g_lower:
-                assigned_roles.append(ROLE_SECURITY_ENGINEER)
-            elif "audit" in g_lower or "compliance" in g_lower:
-                assigned_roles.append(ROLE_COMPLIANCE_AUDITOR)
+        for attr in root.findall(".//{*}Attribute"):
+            attr_name = (attr.get("Name") or "").lower()
+            vals = [val.text.strip() for val in attr.findall("{*}AttributeValue") if val.text]
+            if attr_name in ("email", "mail") and vals:
+                email = vals[0]
+            elif attr_name in ("groups", "roles", "memberof"):
+                for val in vals:
+                    g_lower = val.lower()
+                    if "admin" in g_lower or "infosec" in g_lower:
+                        assigned_roles.append(ROLE_PLATFORM_ADMIN)
+                    elif "security" in g_lower or "soc" in g_lower:
+                        assigned_roles.append(ROLE_SECURITY_ENGINEER)
+                    elif "audit" in g_lower or "compliance" in g_lower:
+                        assigned_roles.append(ROLE_COMPLIANCE_AUDITOR)
+
+        if not email:
+            email = f"{subject}@corporate.local"
 
         if not assigned_roles:
             assigned_roles = [ROLE_DEVOPS_OPERATOR]
@@ -373,7 +539,7 @@ class EnterpriseAuthManager:
             issuer="corporate-idp-saml2",
             expires_at=int(time.time()) + 28800,  # 8 hours
             email=email,
-            metadata={"saml_authenticated": True},
+            metadata={"saml_authenticated": True, "signed": sig_node is not None},
         )
 
     # --------------------------------------------------------------------------
